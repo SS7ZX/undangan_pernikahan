@@ -41,6 +41,7 @@ import {
   Send,
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ① CONFIGURATION — edit only this block
@@ -61,8 +62,8 @@ const CONFIG = {
   bankAccount:   "1234567890",
   accountHolder: "Romeo Montague",
   audioSrc:      "/wedding-song.mp3",
-  photo1:        "/photo1.jpg",
-  photo2:        "/photo2.jpg",
+  photo1:        "/photo1.jpeg",
+  photo2:        "/photo2.jpeg",
   qrisImg:       "/qris.png",
   quote:
     "Two hearts that found in each other a home — " +
@@ -102,13 +103,13 @@ function OrnamentDivider({ light = false }: { light?: boolean }) {
   const dot  = light ? "rgba(255,255,255,0.5)"  : "#8A9A5B";
   return (
     <div className="flex items-center justify-center gap-3">
-      <div className="h-px flex-1 max-w-80px" style={{ background: line }} />
+      <div className="h-px flex-1 max-w-[80px]" style={{ background: line }} />
       <div className="w-1 h-1 rotate-45" style={{ background: dot }} />
       <div className="h-px w-3" style={{ background: line }} />
       <Heart size={9} fill={dot} style={{ color: dot }} />
       <div className="h-px w-3" style={{ background: line }} />
       <div className="w-1 h-1 rotate-45" style={{ background: dot }} />
-      <div className="h-px flex-1 max-w-80px" style={{ background: line }} />
+      <div className="h-px flex-1 max-w-[80px]" style={{ background: line }} />
     </div>
   );
 }
@@ -179,7 +180,7 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
       }}
     >
       <div
-        className="absolute top-0 inset-x-0 h-2px"
+        className="absolute top-0 inset-x-0 h-[2px]"
         style={{
           background:
             "linear-gradient(to right, transparent, #8A9A5B 40%, #8A9A5B 60%, transparent)",
@@ -463,7 +464,7 @@ export default function WeddingInvitation() {
 
         {/* ── CUSTOM CURSOR (desktop) ──────────────────────────────────── */}
         <motion.div
-          className="fixed top-0 left-0 z-9999 pointer-events-none hidden md:block"
+          className="fixed top-0 left-0 z-[9999] pointer-events-none hidden md:block"
           style={{ x: cx, y: cy }}
         >
           <motion.div
@@ -479,7 +480,7 @@ export default function WeddingInvitation() {
           {loading && (
             <motion.div
               key="loader"
-              className="fixed inset-0 z-9990 flex flex-col items-center justify-center select-none"
+              className="fixed inset-0 z-[9990] flex flex-col items-center justify-center select-none"
               style={{ background: "#181D16" }}
               exit={{
                 clipPath: "inset(100% 0 0 0)",
@@ -547,7 +548,7 @@ export default function WeddingInvitation() {
           onClick={toggleAudio}
           onMouseEnter={over} onMouseLeave={out}
           aria-label={isPlaying ? "Pause music" : "Play music"}
-          className="fixed top-4 right-4 z-500 flex items-center gap-2 rounded-full px-4 py-2.5 border transition-colors duration-300"
+          className="fixed top-4 right-4 z-[500] flex items-center gap-2 rounded-full px-4 py-2.5 border transition-colors duration-300"
           style={{
             background:    "rgba(250,249,246,0.6)",
             backdropFilter:"blur(24px)",
@@ -632,11 +633,11 @@ export default function WeddingInvitation() {
                 variants={vFadeIn}
                 className="flex items-center gap-4 my-3 w-full justify-center"
               >
-                <div className="h-px flex-1 max-w-90px" style={{ background: "linear-gradient(to right, transparent, #C9D4A8)" }} />
+                <div className="h-px flex-1 max-w-[90px]" style={{ background: "linear-gradient(to right, transparent, #C9D4A8)" }} />
                 <span className="font-serif italic font-light select-none" style={{ fontSize: "clamp(2.4rem, 9vw, 4rem)", color: "var(--sage)" }}>
                   &
                 </span>
-                <div className="h-px flex-1 max-w-90px" style={{ background: "linear-gradient(to left, transparent, #C9D4A8)" }} />
+                <div className="h-px flex-1 max-w-[90px]" style={{ background: "linear-gradient(to left, transparent, #C9D4A8)" }} />
               </motion.div>
 
               <motion.h1
@@ -722,7 +723,7 @@ export default function WeddingInvitation() {
               {/* Photo 1 — tall */}
               <motion.div
                 style={{ y: photo1Y, rotate: photo1R }}
-                className="w-full md:w-[48%] shrink-0"
+                className="w-full md:w-[48%] flex-shrink-0"
               >
                 <div
                   className="w-full rounded-2xl overflow-hidden relative"
@@ -731,12 +732,7 @@ export default function WeddingInvitation() {
                     boxShadow: "0 24px 64px rgba(44,48,46,0.10)",
                   }}
                 >
-                  <div className="photo-placeholder w-full h-full flex flex-col items-center justify-center gap-3">
-                    <div className="w-10 h-10 rounded-full" style={{ background: "#C9D4A8", opacity: 0.7 }} />
-                    <p className="font-sans text-[10px] tracking-[0.36em] uppercase" style={{ color: "#A8A09A" }}>Photo One</p>
-                    <p className="font-sans text-[10px]" style={{ color: "#C0BAB2" }}>Place photo1.jpg in /public</p>
-                  </div>
-                  {/* <Image src={CONFIG.photo1} alt="Couple" fill style={{ objectFit: "cover" }} /> */}
+                  <Image src={CONFIG.photo1} alt="Couple photo one" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 48vw" priority />
                   <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(44,48,46,0.10), transparent)" }} />
                 </div>
               </motion.div>
@@ -744,7 +740,7 @@ export default function WeddingInvitation() {
               {/* Photo 2 — shorter, offset */}
               <motion.div
                 style={{ y: photo2Y, rotate: photo2R }}
-                className="w-full md:w-[42%] shrink-0 md:mb-0 md:mt-28"
+                className="w-full md:w-[42%] flex-shrink-0 md:mb-0 md:mt-28"
               >
                 <div
                   className="w-full rounded-2xl overflow-hidden relative"
@@ -753,12 +749,7 @@ export default function WeddingInvitation() {
                     boxShadow: "0 24px 64px rgba(44,48,46,0.10)",
                   }}
                 >
-                  <div className="photo-placeholder w-full h-full flex flex-col items-center justify-center gap-3">
-                    <div className="w-10 h-10 rounded-full" style={{ background: "#C9D4A8", opacity: 0.6 }} />
-                    <p className="font-sans text-[10px] tracking-[0.36em] uppercase" style={{ color: "#A8A09A" }}>Photo Two</p>
-                    <p className="font-sans text-[10px]" style={{ color: "#C0BAB2" }}>Place photo2.jpg in /public</p>
-                  </div>
-                  {/* <Image src={CONFIG.photo2} alt="Couple" fill style={{ objectFit: "cover" }} /> */}
+                  <Image src={CONFIG.photo2} alt="Couple photo two" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 42vw" />
                   <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(44,48,46,0.08), transparent)" }} />
                 </div>
               </motion.div>
@@ -884,32 +875,17 @@ export default function WeddingInvitation() {
                 Your presence is the most precious gift of all. Should you wish to extend a blessing, you may do so here.
               </p>
 
-              {/* QRIS art placeholder */}
+              {/* QRIS — live image */}
               <div
-                className="w-44 h-44 rounded-2xl border flex flex-col items-center justify-center gap-2 mb-8 overflow-hidden"
-                style={{ borderColor: "var(--border)", background: "var(--sage-pale)" }}
+                className="w-52 h-52 rounded-2xl border mb-8 overflow-hidden relative"
+                style={{ borderColor: "var(--border)", background: "white" }}
               >
-                <svg viewBox="0 0 88 88" width="80" height="80" fill="none">
-                  <rect x="4"  y="4"  width="34" height="34" rx="4" fill="#C9D4A8" opacity=".5"/>
-                  <rect x="50" y="4"  width="34" height="34" rx="4" fill="#C9D4A8" opacity=".5"/>
-                  <rect x="4"  y="50" width="34" height="34" rx="4" fill="#C9D4A8" opacity=".5"/>
-                  <rect x="12" y="12" width="18" height="18" rx="2" fill="#8A9A5B"/>
-                  <rect x="58" y="12" width="18" height="18" rx="2" fill="#8A9A5B"/>
-                  <rect x="12" y="58" width="18" height="18" rx="2" fill="#8A9A5B"/>
-                  <rect x="50" y="50" width="9"  height="9"  rx="1" fill="#8A9A5B" opacity=".65"/>
-                  <rect x="63" y="50" width="9"  height="9"  rx="1" fill="#8A9A5B" opacity=".65"/>
-                  <rect x="50" y="63" width="22" height="9"  rx="1" fill="#8A9A5B" opacity=".65"/>
-                  <rect x="38" y="4"  width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                  <rect x="38" y="16" width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                  <rect x="38" y="28" width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                  <rect x="4"  y="38" width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                  <rect x="16" y="38" width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                  <rect x="28" y="38" width="8"  height="8"  rx="1" fill="#A4B475" opacity=".45"/>
-                </svg>
-                <p className="font-sans text-[9px] tracking-[0.18em] uppercase text-center px-3" style={{ color: "#9AA688" }}>
-                  Add qris.png to /public
-                </p>
-                {/* <Image src={CONFIG.qrisImg} alt="QRIS" fill style={{ objectFit: "contain", padding: "12px" }} /> */}
+                <Image
+                  src={CONFIG.qrisImg}
+                  alt="QRIS Payment"
+                  fill
+                  style={{ objectFit: "contain", padding: "8px" }}
+                />
               </div>
 
               {/* Bank info */}
@@ -1070,7 +1046,7 @@ export default function WeddingInvitation() {
           initial={{ y: 120, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 3.4, duration: 0.9, type: "spring", stiffness: 50, damping: 15 }}
-          className="fixed bottom-0 inset-x-0 z-9000"
+          className="fixed bottom-0 inset-x-0 z-[9000]"
         >
           <div
             className="w-full border-t"
@@ -1095,7 +1071,7 @@ export default function WeddingInvitation() {
                 rel="noreferrer"
                 onMouseEnter={over} onMouseLeave={out}
                 whileTap={{ scale: 0.97 }}
-                className="pulse-attend flex-1 flex items-center justify-center gap-2 rounded-xl py-14px font-sans text-[10px] tracking-[0.3em] uppercase"
+                className="pulse-attend flex-1 flex items-center justify-center gap-2 rounded-xl py-[14px] font-sans text-[10px] tracking-[0.3em] uppercase"
                 style={{ background: "var(--charcoal)", color: "var(--cream)" }}
               >
                 <Heart size={11} fill="currentColor" strokeWidth={0} />
@@ -1111,7 +1087,7 @@ export default function WeddingInvitation() {
                 rel="noreferrer"
                 onMouseEnter={over} onMouseLeave={out}
                 whileTap={{ scale: 0.97 }}
-                className="shrink-0 flex items-center justify-center gap-2 rounded-xl py-14px px-5 font-sans text-[10px] tracking-[0.3em] uppercase border transition-all duration-300"
+                className="flex-shrink-0 flex items-center justify-center gap-2 rounded-xl py-[14px] px-5 font-sans text-[10px] tracking-[0.3em] uppercase border transition-all duration-300"
                 style={{ borderColor: "var(--border)", color: "var(--muted)" }}
               >
                 Regrets
