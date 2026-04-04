@@ -2,8 +2,9 @@
 
 /**
  * ╔═══════════════════════════════════════════════════════════════════════════╗
- * ║  UNDANGAN DIGITAL — app/page.tsx                                         ║
- * ║  Botanical Luxury · Award-grade · Android & iOS optimised                ║
+ * ║  UNDANGAN DIGITAL — app/page.tsx                                          ║
+ * ║  Botanical Luxury · Award-grade · Android & iOS optimised                 ║
+ * ║  By Adnan S                                                               ║
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
  * PERFORMANCE NOTES (for zero-lag on all phones):
@@ -33,10 +34,10 @@ import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ① CONFIG — the only block you ever edit
+// ① CONFIG — EDIT THIS! (all other code is generic and reusable)
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  groom:         "Romeo",
+  groom:         "Rian",
   bride:         "Juliet",
   groomFull:     "Romeo Montague",
   brideFull:     "Juliet Capulet",
