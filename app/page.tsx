@@ -745,12 +745,13 @@ export default function WeddingInvitation() {
                 <div
                   className="w-full rounded-2xl overflow-hidden relative"
                   style={{
-                    height:    "clamp(260px, 58vw, 480px)",
-                    boxShadow: "0 24px 64px rgba(44,48,46,0.10)",
+                    height:     "clamp(320px, 72vw, 560px)",
+                    boxShadow:  "0 24px 64px rgba(44,48,46,0.10)",
+                    background: "#F4F8EC",
                   }}
                 >
-                  <Image src={CONFIG.photo2} alt="Couple photo two" fill style={{ objectFit: "cover" }} sizes="(max-width: 768px) 100vw, 42vw" />
-                  <div className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(44,48,46,0.08), transparent)" }} />
+                  <Image src={CONFIG.photo2} alt="Couple photo two" fill style={{ objectFit: "contain", objectPosition: "center center", background: "#F4F8EC" }} sizes="(max-width: 768px) 100vw, 42vw" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none" style={{ background: "linear-gradient(to top, rgba(44,48,46,0.06), transparent)" }} />
                 </div>
               </motion.div>
             </div>
