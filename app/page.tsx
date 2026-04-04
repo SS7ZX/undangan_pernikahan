@@ -39,7 +39,7 @@ import Image from "next/image";
 const C = {
   groom:         "Rian",
   bride:         "Juliet",
-  groomFull:     "Romeo Montague",
+  groomFull:     "Rian Pebriansyah",
   brideFull:     "Juliet Capulet",
   date:          "Sabtu, 12 Desember 2026",
   dateFormal:    "12 · 12 · 2026",
@@ -49,7 +49,7 @@ const C = {
   venue:         "The Grand Botanic Gardens",
   address:       "Jl. Elegance No. 123, Jakarta Selatan",
   mapsUrl:       "https://maps.google.com",
-  whatsapp:      "6281234567890",
+  whatsapp:      "62895369942679",
   bankName:      "Bank Mandiri",
   bankAccount:   "1234 5678 9012",
   accountHolder: "Romeo Montague",
