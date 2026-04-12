@@ -2,9 +2,8 @@
 
 /**
  * ╔═══════════════════════════════════════════════════════════════════════════╗
- * ║  UNDANGAN DIGITAL — app/page.tsx                                          ║
- * ║  Botanical Luxury · Award-grade · Android & iOS optimised                 ║
- * ║  By Adnan S                                                               ║
+ * ║  UNDANGAN DIGITAL — app/page.tsx                                         ║
+ * ║  Botanical Luxury · Award-grade · Android & iOS optimised                ║
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
  * PERFORMANCE NOTES (for zero-lag on all phones):
@@ -34,25 +33,25 @@ import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Image from "next/image";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ① CONFIG — EDIT THIS! (all other code is generic and reusable)
+// ① CONFIG — the only block you ever edit
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
   groom:         "Rian",
-  bride:         "Juliet",
-  groomFull:     "Rian Pebriansyah",
-  brideFull:     "Juliet Capulet",
-  date:          "Sabtu, 12 Desember 2026",
-  dateFormal:    "12 · 12 · 2026",
-  day:           "Saturday",
-  time:          "Pukul 16.00 WIB",
-  timeEn:        "At four o'clock in the afternoon",
-  venue:         "The Grand Botanic Gardens",
-  address:       "Jl. Elegance No. 123, Jakarta Selatan",
-  mapsUrl:       "https://maps.google.com",
+  bride:         "Windi",
+  groomFull:     "Rian Pebriansyah, S.Psi",
+  brideFull:     "Windi Nuraeni",
+  date:          "Minggu, 22 November 2026",
+  dateFormal:    "22 · 11 · 2026",
+  day:           "Minggu",
+  time:          "Pukul 08.00 WIB",
+  timeEn:        "Pukul Delapan Pagi",
+  venue:         "Rumah Mempelai Wanita",
+  address:       "Kp. Jatimulya 2 RT/RW 001/003 No. 1, Kel. Mekarjati, Karawang Barat, Kab. Karawang",
+  mapsUrl:       "https://www.google.com/maps/place/Pengajian+Nurul+aini/@-6.2601681,107.2912323,17z/data=!3m1!4b1!4m6!3m5!1s0x2e6979006df0af83:0x9963dbe4291b465f!8m2!3d-6.2601681!4d107.2938072!16s%2Fg%2F11vrlyj5d8?entry=ttu&g_ep=EgoyMDI2MDQwMS4wIKXMDSoASAFQAw%3D%3D",
   whatsapp:      "62895369942679",
   bankName:      "Bank Mandiri",
-  bankAccount:   "1234 5678 9012",
-  accountHolder: "Romeo Montague",
+  bankAccount:   "1730006953229",
+  accountHolder: "Windi Nuraeni",
   audioSrc:      "/wedding-song.mp3",
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
@@ -140,7 +139,7 @@ const Card = memo(({ children, className = "", dark = false }: {
     variants={vScale}
     className={`relative overflow-hidden rounded-3xl ${className}`}
     style={{
-      background: dark ? "#1A1F18" : "white",
+      background: dark ? "#1A1F18" : "var(--cream)",
       border:     dark ? "1px solid rgba(255,255,255,0.06)" : "1px solid #EFEDE8",
       boxShadow:  dark
         ? "0 16px 48px rgba(0,0,0,0.25)"
@@ -315,7 +314,7 @@ export default function WeddingInvitation() {
           --charcoal:   #1E2219;
           --ink:        #2E3228;
           --cream:      #FAF8F3;
-          --warm:       #F5F1E8;
+          --warm:       #FAF8F3;
           --muted:      #78786E;
           --light:      #ABABА0;
           --border:     #ECEAE3;
@@ -380,7 +379,7 @@ export default function WeddingInvitation() {
           100% { background-position:  200% 0; }
         }
         .shimmer {
-          background: linear-gradient(105deg,#EDE8DF 30%,#F5F0E8 50%,#EDE8DF 70%);
+          background: linear-gradient(105deg,#F0EDE4 30%,#FAF8F3 50%,#F0EDE4 70%);
           background-size: 200% 100%;
           animation: shimmer 2s ease-in-out infinite;
         }
@@ -683,7 +682,7 @@ export default function WeddingInvitation() {
         {/* ════════════════════════════════════════════════════════════════════
             §2  QUOTE — warm off-white panel
         ════════════════════════════════════════════════════════════════════ */}
-        <section className="py-24 px-6" style={{ background: "var(--warm)" }}>
+        <section className="py-24 px-6" style={{ background: "var(--cream)" }}>
           <motion.div
             initial="hidden" whileInView="visible"
             viewport={{ once: true, margin: "-60px" }}
@@ -909,7 +908,7 @@ export default function WeddingInvitation() {
                 style={{
                   width: "clamp(180px, 55vw, 224px)",
                   height: "clamp(180px, 55vw, 224px)",
-                  background: "white",
+                  background: "var(--cream)",
                   border: "1px solid var(--border)",
                   boxShadow: "0 8px 32px rgba(30,34,25,0.07)",
                 }}
@@ -962,7 +961,7 @@ export default function WeddingInvitation() {
         {/* ════════════════════════════════════════════════════════════════════
             §7  UCAPAN & DOA (Guestbook)
         ════════════════════════════════════════════════════════════════════ */}
-        <section className="py-24 px-4 max-w-lg mx-auto" style={{ background: "var(--warm)" }}>
+        <section className="py-24 px-4 max-w-lg mx-auto" style={{ background: "var(--cream)" }}>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast} className="text-center mb-14">
             <motion.div variants={vIn}><SectionBadge label="Ucapan & Doa" /></motion.div>
             <motion.h2 variants={vUp} className="font-serif text-4xl md:text-5xl font-light" style={{ color: "var(--ink)" }}>
