@@ -52,6 +52,9 @@ const C = {
   bankName:      "Bank Mandiri",
   bankAccount:   "1730006953229",
   accountHolder: "Windi Nuraeni",
+  bankName2:     "Bank Mandiri",
+  bankAccount2:  "— (isi nomor rekening Rian) —",
+  accountHolder2:"Rian Pebriansyah",
   audioSrc:      "/wedding-song.mp3",
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
@@ -239,26 +242,41 @@ export default function WeddingInvitation() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Loader progress — auto-play music when loader finishes
+  // Audio + Loader — combined so audio is guaranteed ready before autoplay fires
   useEffect(() => {
+    // 1. Create audio object immediately
+    const a = new Audio(C.audioSrc);
+    a.loop = true; a.volume = 0.32;
+    audioRef.current = a;
+
+    // 2. Run loader progress bar
     let t = 0;
     const iv = setInterval(() => {
       t += Math.random() * 18 + 10;
       setLoadPct(Math.min(Math.round(t), 100));
       if (t >= 100) clearInterval(iv);
     }, 100);
+
+    // 3. After loader finishes, attempt autoplay
     const tm = setTimeout(() => {
       setLoading(false);
-      // Attempt autoplay after loader exits — browsers may block without prior gesture
       setTimeout(() => {
-        if (audioRef.current) {
-          audioRef.current.play()
-            .then(() => setIsPlaying(true))
-            .catch(() => {}); // silently blocked → user taps Music button to start
-        }
-      }, 500);
+        a.play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            // Browser blocked autoplay (requires user gesture on mobile)
+            // Music button remains as fallback — no error shown
+          });
+      }, 600); // wait for loader exit animation to clear
     }, 2800);
-    return () => { clearInterval(iv); clearTimeout(tm); };
+
+    return () => {
+      clearInterval(iv);
+      clearTimeout(tm);
+      a.pause();
+      a.src = "";
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Cursor tracking
@@ -268,14 +286,6 @@ export default function WeddingInvitation() {
     window.addEventListener("mousemove", fn, { passive: true });
     return () => window.removeEventListener("mousemove", fn);
   }, [isMobile, mx, my]);
-
-  // Audio
-  useEffect(() => {
-    const a = new Audio(C.audioSrc);
-    a.loop = true; a.volume = 0.32;
-    audioRef.current = a;
-    return () => { a.pause(); a.src = ""; };
-  }, []);
 
   const toggleAudio = useCallback(() => {
     if (!audioRef.current) return;
@@ -531,66 +541,189 @@ export default function WeddingInvitation() {
           </motion.div>
         )}
 
-        {/* ── PRE-LOADER ──────────────────────────────────────────────────── */}
+        {/* ── PRE-LOADER — Indian Mandala ──────────────────────────────────── */}
         <AnimatePresence>
           {loading && (
             <motion.div
               key="loader"
-              className="fixed inset-0 z-[9990] flex flex-col items-center justify-center"
-              style={{ background: "var(--charcoal)" }}
-              exit={{ clipPath: "inset(100% 0 0 0)", transition: { duration: 1.1, ease: [0.76,0,0.24,1], delay: 0.05 } }}
+              className="fixed inset-0 z-[9990] flex flex-col items-center justify-center overflow-hidden"
+              style={{ background: "#0F0A06" }}
+              exit={{ clipPath: "inset(100% 0 0 0)", transition: { duration: 1.2, ease: [0.76,0,0.24,1], delay: 0.05 } }}
             >
-              {/* Botanical ring decoration */}
+              {/* ── Background radial glow — saffron ── */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: "radial-gradient(ellipse 70% 55% at 50% 48%, rgba(180,100,20,0.18) 0%, rgba(120,60,10,0.08) 45%, transparent 72%)",
+              }} />
+
+              {/* ── Outer decorative border — top & bottom ornamental band ── */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.75 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 1.3, ease }}
-                className="relative flex items-center justify-center mb-12"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.5, delay: 0.2 }}
+                className="absolute top-0 inset-x-0 h-1 pointer-events-none"
+                style={{ background: "linear-gradient(90deg, transparent, #D4A84B 25%, #C8832A 50%, #D4A84B 75%, transparent)" }}
+              />
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1.5, delay: 0.2 }}
+                className="absolute bottom-0 inset-x-0 h-1 pointer-events-none"
+                style={{ background: "linear-gradient(90deg, transparent, #D4A84B 25%, #C8832A 50%, #D4A84B 75%, transparent)" }}
+              />
+
+              {/* ── Mandala SVG ── */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6, rotate: -30 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ duration: 1.6, ease: [0.16,1,0.3,1] }}
+                className="relative flex items-center justify-center mb-8"
+                style={{ width: "min(82vw, 320px)", height: "min(82vw, 320px)" }}
               >
-                {/* Rings */}
-                {[100, 144, 192].map((sz, i) => (
+                {/* Outermost ring — slow CW */}
+                <motion.div
+                  className="absolute inset-0"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+                >
+                  <svg viewBox="0 0 320 320" width="100%" height="100%">
+                    {/* 16 outer petals */}
+                    {Array.from({length:16}).map((_,i) => (
+                      <ellipse key={i}
+                        cx="160" cy="22" rx="7" ry="18"
+                        fill="none" stroke="#D4A84B" strokeWidth="0.8" opacity="0.35"
+                        transform={`rotate(${i*22.5} 160 160)`}
+                      />
+                    ))}
+                    {/* Outer dotted ring */}
+                    {Array.from({length:32}).map((_,i) => (
+                      <circle key={i}
+                        cx={160 + 148*Math.cos((i*11.25-90)*Math.PI/180)}
+                        cy={160 + 148*Math.sin((i*11.25-90)*Math.PI/180)}
+                        r="1.8" fill="#C8832A" opacity="0.4"
+                      />
+                    ))}
+                  </svg>
+                </motion.div>
+
+                {/* Middle ring — slow CCW */}
+                <motion.div
+                  className="absolute"
+                  style={{ inset: "14%" }}
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+                >
+                  <svg viewBox="0 0 240 240" width="100%" height="100%">
+                    {/* 12 middle petals */}
+                    {Array.from({length:12}).map((_,i) => (
+                      <ellipse key={i}
+                        cx="120" cy="16" rx="9" ry="22"
+                        fill="rgba(212,168,75,0.08)" stroke="#D4A84B" strokeWidth="0.7" opacity="0.5"
+                        transform={`rotate(${i*30} 120 120)`}
+                      />
+                    ))}
+                    {/* Diamond markers */}
+                    {Array.from({length:12}).map((_,i) => {
+                      const angle = (i*30 - 90) * Math.PI / 180;
+                      const x = 120 + 108*Math.cos(angle);
+                      const y = 120 + 108*Math.sin(angle);
+                      return <rect key={i} x={x-3} y={y-3} width="6" height="6"
+                        fill="#D4A84B" opacity="0.55"
+                        transform={`rotate(45 ${x} ${y})`} />;
+                    })}
+                  </svg>
+                </motion.div>
+
+                {/* Inner ring — medium CW */}
+                <motion.div
+                  className="absolute"
+                  style={{ inset: "28%" }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                >
+                  <svg viewBox="0 0 168 168" width="100%" height="100%">
+                    {/* 8 inner lotus petals */}
+                    {Array.from({length:8}).map((_,i) => (
+                      <ellipse key={i}
+                        cx="84" cy="14" rx="10" ry="24"
+                        fill="rgba(200,131,42,0.12)" stroke="#C8832A" strokeWidth="0.9" opacity="0.6"
+                        transform={`rotate(${i*45} 84 84)`}
+                      />
+                    ))}
+                    {/* Inner circle */}
+                    <circle cx="84" cy="84" r="30" fill="none" stroke="#D4A84B" strokeWidth="0.6" opacity="0.4"
+                      strokeDasharray="4 3" />
+                  </svg>
+                </motion.div>
+
+                {/* ── Centre lotus + initials ── */}
+                <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div
-                    key={i}
-                    className="absolute rounded-full"
-                    style={{ width: sz, height: sz, border: `1px solid rgba(168,186,120,${0.2 - i*0.055})` }}
-                    animate={{ rotate: i % 2 === 0 ? 360 : -360 }}
-                    transition={{ duration: 30 + i * 10, repeat: Infinity, ease: "linear" }}
-                  />
-                ))}
-                {/* Initials */}
-                <div className="relative z-10 text-center">
-                  <motion.p
-                    initial={{ opacity: 0, letterSpacing: "0.9em" }}
-                    animate={{ opacity: 1, letterSpacing: "0.42em" }}
-                    transition={{ duration: 1.6, delay: 0.4 }}
-                    className="font-serif font-light"
-                    style={{ fontSize: "clamp(2.8rem,10vw,4rem)", color: "white", letterSpacing: "0.42em" }}
+                    animate={{ scale: [1, 1.04, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                    className="flex flex-col items-center gap-1"
                   >
-                    R <span style={{ color: "var(--sage-m)" }}>&</span> J
-                  </motion.p>
+                    {/* Lotus SVG */}
+                    <svg width="52" height="32" viewBox="0 0 52 32" fill="none" style={{ marginBottom: "4px" }}>
+                      <path d="M26 30 C22 24 14 20 8 22 C12 14 20 10 26 12 C32 10 40 14 44 22 C38 20 30 24 26 30Z"
+                        fill="rgba(212,168,75,0.18)" stroke="#D4A84B" strokeWidth="0.8"/>
+                      <path d="M26 28 C24 22 18 19 14 20 C17 14 22 11 26 13 C30 11 35 14 38 20 C34 19 28 22 26 28Z"
+                        fill="rgba(212,168,75,0.25)" stroke="#D4A84B" strokeWidth="0.7"/>
+                      <path d="M26 26 C24 21 21 19 19 20 C21 16 24 14 26 15 C28 14 31 16 33 20 C31 19 28 21 26 26Z"
+                        fill="rgba(212,168,75,0.35)" stroke="#D4A84B" strokeWidth="0.6"/>
+                      <line x1="26" y1="26" x2="26" y2="32" stroke="#D4A84B" strokeWidth="0.8" opacity="0.5"/>
+                    </svg>
+                    {/* Initials */}
+                    <motion.p
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.9, duration: 1.2 }}
+                      className="font-serif font-light text-center"
+                      style={{ fontSize: "clamp(2.4rem,9vw,3.4rem)", color: "#F5E8C8", letterSpacing: "0.32em", lineHeight: 1, textShadow: "0 0 30px rgba(212,168,75,0.4)" }}
+                    >
+                      {C.bride[0]} <span style={{ color: "#D4A84B", fontSize: "0.75em" }}>✦</span> {C.groom[0]}
+                    </motion.p>
+                  </motion.div>
                 </div>
               </motion.div>
 
+              {/* ── Bismillah ornament line ── */}
+              <motion.div
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                transition={{ delay: 0.8, duration: 1.2, ease: [0.16,1,0.3,1] }}
+                className="flex items-center gap-3 mb-5"
+              >
+                <div className="h-px w-16" style={{ background: "linear-gradient(to right,transparent,#D4A84B)" }} />
+                <span style={{ color: "#D4A84B", fontSize: "14px", letterSpacing: "0.06em", fontFamily: "serif" }}>✦ ✦ ✦</span>
+                <div className="h-px w-16" style={{ background: "linear-gradient(to left,transparent,#D4A84B)" }} />
+              </motion.div>
+
+              {/* ── Label ── */}
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1, duration: 0.9 }}
-                className="font-sans text-[9px] tracking-[0.6em] uppercase mb-12"
-                style={{ color: "rgba(168,186,120,0.5)" }}
+                transition={{ delay: 1.1, duration: 0.9 }}
+                className="font-sans text-[9px] tracking-[0.62em] uppercase mb-10"
+                style={{ color: "rgba(212,168,75,0.45)" }}
               >
                 Memuat Undangan
               </motion.p>
 
-              {/* Progress track */}
-              <div className="w-56 h-[1px] relative" style={{ background: "rgba(255,255,255,0.06)" }}>
+              {/* ── Progress bar — gold ── */}
+              <div className="w-52 h-[1px] relative rounded-full overflow-hidden" style={{ background: "rgba(212,168,75,0.12)" }}>
                 <motion.div
-                  className="absolute inset-y-0 left-0"
-                  style={{ background: "var(--sage-m)", width: `${loadPct}%`, transition: "width 0.1s linear" }}
+                  className="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    background: "linear-gradient(90deg, #C8832A, #D4A84B, #E8C87A)",
+                    width: `${loadPct}%`,
+                    transition: "width 0.12s linear",
+                    boxShadow: "0 0 8px rgba(212,168,75,0.5)",
+                  }}
                 />
               </div>
               <motion.p
-                className="font-sans mt-3 tabular-nums"
-                style={{ color: "rgba(168,186,120,0.3)", fontSize: "9px", letterSpacing: "0.1em" }}
+                className="font-sans mt-2.5 tabular-nums"
+                style={{ color: "rgba(212,168,75,0.28)", fontSize: "9px", letterSpacing: "0.15em" }}
               >
                 {loadPct}%
               </motion.p>
@@ -993,41 +1126,54 @@ export default function WeddingInvitation() {
                 />
               </div>
 
-              {/* Bank info */}
-              <div className="w-full text-center mb-7 py-6 rounded-2xl" style={{ background: "var(--sage-p)" }}>
-                <p className="font-sans text-[9px] tracking-[0.44em] uppercase mb-2" style={{ color: "var(--sage)" }}>
-                  {C.bankName}
-                </p>
-                <p className="font-serif text-2xl tracking-[0.06em]" style={{ color: "var(--ink)", letterSpacing: "0.08em" }}>
-                  {C.bankAccount}
-                </p>
-                <p className="font-sans text-xs mt-1.5 italic" style={{ color: "var(--muted)" }}>
-                  a.n. {C.accountHolder}
-                </p>
+              {/* Bank accounts — both bride & groom */}
+              <div className="w-full flex flex-col gap-3 mb-7">
+                {/* Bride */}
+                <div className="w-full text-center py-5 px-4 rounded-2xl" style={{ background: "var(--sage-p)" }}>
+                  <p className="font-sans text-[8px] tracking-[0.44em] uppercase mb-1" style={{ color: "var(--sage)" }}>
+                    {C.bankName} — Mempelai Wanita
+                  </p>
+                  <p className="font-serif text-xl tracking-[0.06em]" style={{ color: "var(--ink)" }}>
+                    {C.bankAccount}
+                  </p>
+                  <p className="font-sans text-[11px] mt-1 italic" style={{ color: "var(--muted)" }}>
+                    a.n. {C.accountHolder}
+                  </p>
+                  <button
+                    onClick={handleCopy} {...hover}
+                    className="mt-3 inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full font-sans text-[9px] tracking-[0.28em] uppercase border transition-all duration-300"
+                    style={{
+                      borderColor: copied ? "var(--sage)" : "rgba(138,154,91,0.4)",
+                      color:       copied ? "white"       : "var(--sage)",
+                      background:  copied ? "var(--sage)" : "transparent",
+                    }}
+                  >
+                    <AnimatePresence mode="wait">
+                      {copied ? (
+                        <motion.span key="y" initial={{ opacity:0,y:4 }} animate={{ opacity:1,y:0 }} exit={{ opacity:0,y:-4 }} className="flex items-center gap-1.5">
+                          <Check size={11} strokeWidth={2.2} /> Tersalin!
+                        </motion.span>
+                      ) : (
+                        <motion.span key="n" initial={{ opacity:0,y:4 }} animate={{ opacity:1,y:0 }} exit={{ opacity:0,y:-4 }} className="flex items-center gap-1.5">
+                          <Copy size={11} strokeWidth={1.6} /> Salin
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </button>
+                </div>
+                {/* Groom */}
+                <div className="w-full text-center py-5 px-4 rounded-2xl" style={{ background: "var(--sage-p)" }}>
+                  <p className="font-sans text-[8px] tracking-[0.44em] uppercase mb-1" style={{ color: "var(--sage)" }}>
+                    {C.bankName2} — Mempelai Pria
+                  </p>
+                  <p className="font-serif text-xl tracking-[0.06em]" style={{ color: "var(--ink)" }}>
+                    {C.bankAccount2}
+                  </p>
+                  <p className="font-sans text-[11px] mt-1 italic" style={{ color: "var(--muted)" }}>
+                    a.n. {C.accountHolder2}
+                  </p>
+                </div>
               </div>
-
-              {/* Copy */}
-              <motion.button
-                onClick={handleCopy} {...hover} whileTap={{ scale: 0.97 }}
-                className="w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 font-sans text-[10px] tracking-[0.3em] uppercase border transition-all duration-400"
-                style={{
-                  borderColor: "var(--sage)",
-                  color:       copied ? "white" : "var(--sage)",
-                  background:  copied ? "var(--sage)" : "transparent",
-                }}
-              >
-                <AnimatePresence mode="wait">
-                  {copied ? (
-                    <motion.span key="y" initial={{ opacity:0,y:5 }} animate={{ opacity:1,y:0 }} exit={{ opacity:0,y:-5 }} className="flex items-center gap-2">
-                      <Check size={14} strokeWidth={2.2} /> Berhasil Disalin!
-                    </motion.span>
-                  ) : (
-                    <motion.span key="n" initial={{ opacity:0,y:5 }} animate={{ opacity:1,y:0 }} exit={{ opacity:0,y:-5 }} className="flex items-center gap-2">
-                      <Copy size={14} strokeWidth={1.6} /> Salin Nomor Rekening
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
             </div>
           </Card>
         </section>
