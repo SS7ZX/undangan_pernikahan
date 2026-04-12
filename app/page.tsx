@@ -239,7 +239,7 @@ export default function WeddingInvitation() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // Loader progress
+  // Loader progress — auto-play music when loader finishes
   useEffect(() => {
     let t = 0;
     const iv = setInterval(() => {
@@ -247,7 +247,17 @@ export default function WeddingInvitation() {
       setLoadPct(Math.min(Math.round(t), 100));
       if (t >= 100) clearInterval(iv);
     }, 100);
-    const tm = setTimeout(() => setLoading(false), 2800);
+    const tm = setTimeout(() => {
+      setLoading(false);
+      // Attempt autoplay after loader exits — browsers may block without prior gesture
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {}); // silently blocked → user taps Music button to start
+        }
+      }, 500);
+    }, 2800);
     return () => { clearInterval(iv); clearTimeout(tm); };
   }, []);
 
