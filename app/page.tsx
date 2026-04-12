@@ -359,18 +359,35 @@ export default function WeddingInvitation() {
           body { scrollbar-width: none; }
         }
 
-        /* ── Floating Leaves ── */
-        @keyframes leaf-fall {
-          0%   { transform: translateY(-80px) translateX(0)   rotate(0deg);   opacity: 0; }
-          6%   { opacity: 0.5; }
-          50%  { transform: translateY(50vh)  translateX(20px) rotate(200deg); opacity: 0.3; }
-          94%  { opacity: 0.2; }
-          100% { transform: translateY(108vh) translateX(-10px) rotate(440deg); opacity: 0; }
+        /* ── Flower Rain ── */
+        @keyframes petal-a {
+          0%   { transform: translateY(-90px) translateX(0px)   rotate(0deg)   scale(1);    opacity: 0; }
+          5%   { opacity: 0.72; }
+          30%  { transform: translateY(28vh)  translateX(-18px) rotate(110deg) scale(0.95); }
+          60%  { transform: translateY(58vh)  translateX(12px)  rotate(240deg) scale(1.02); opacity: 0.5; }
+          90%  { opacity: 0.28; }
+          100% { transform: translateY(112vh) translateX(-8px)  rotate(380deg) scale(0.9);  opacity: 0; }
         }
-        .leaf {
-          position: fixed; top: -80px; pointer-events: none; z-index: 2;
-          animation: leaf-fall linear infinite;
-          will-change: transform;
+        @keyframes petal-b {
+          0%   { transform: translateY(-90px) translateX(0px)   rotate(20deg)  scale(0.9);  opacity: 0; }
+          7%   { opacity: 0.68; }
+          35%  { transform: translateY(32vh)  translateX(22px)  rotate(150deg) scale(1.05); }
+          65%  { transform: translateY(65vh)  translateX(-14px) rotate(280deg) scale(0.95); opacity: 0.42; }
+          92%  { opacity: 0.22; }
+          100% { transform: translateY(114vh) translateX(6px)   rotate(400deg) scale(0.85); opacity: 0; }
+        }
+        @keyframes petal-c {
+          0%   { transform: translateY(-70px) rotate(0deg)   scale(0.8);  opacity: 0; }
+          8%   { opacity: 0.62; }
+          50%  { transform: translateY(50vh)  rotate(300deg) scale(0.85); opacity: 0.38; }
+          100% { transform: translateY(112vh) rotate(600deg) scale(0.75); opacity: 0; }
+        }
+        .petal { position: fixed; top: -90px; pointer-events: none; z-index: 2; will-change: transform; }
+        .petal-a { animation: petal-a ease-in-out infinite; }
+        .petal-b { animation: petal-b ease-in-out infinite; }
+        .petal-c { animation: petal-c linear       infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .petal { animation: none !important; opacity: 0 !important; }
         }
 
         /* ── Shimmer on photo load ── */
@@ -414,7 +431,7 @@ export default function WeddingInvitation() {
 
         /* ── Reduce motion ── */
         @media (prefers-reduced-motion: reduce) {
-          .leaf, .bar, .attend-pulse { animation: none !important; }
+          .petal, .bar, .attend-pulse { animation: none !important; }
         }
       `}</style>
 
@@ -423,24 +440,71 @@ export default function WeddingInvitation() {
         style={{ background: "var(--cream)", paddingBottom: "calc(80px + env(safe-area-inset-bottom))" }}
       >
 
-        {/* ── FALLING LEAVES ─────────────────────────────────────────────── */}
-        {[
-          { l:"5%",  d:"0s",   t:"20s", s:16, r:12 },
-          { l:"14%", d:"5.5s", t:"25s", s:11, r:8  },
-          { l:"28%", d:"2.2s", t:"18s", s:19, r:14 },
-          { l:"43%", d:"8s",   t:"22s", s:13, r:10 },
-          { l:"59%", d:"1.4s", t:"17s", s:17, r:13 },
-          { l:"72%", d:"6.8s", t:"21s", s:10, r:8  },
-          { l:"85%", d:"3.6s", t:"19s", s:15, r:11 },
-          { l:"93%", d:"10s",  t:"24s", s:9,  r:7  },
-        ].map((p, i) => (
-          <div key={i} className="leaf" style={{ left:p.l, animationDelay:p.d, animationDuration:p.t }}>
-            <svg width={p.s} height={p.r} viewBox="0 0 20 14" fill="none">
-              <path d="M10 1 C6 1 1 4 1 7 C1 10 6 13 10 13 C14 13 19 10 19 7 C19 4 14 1 10 1Z" fill="#C9D4A8" opacity="0.55"/>
-              <line x1="10" y1="1" x2="10" y2="13" stroke="#A8BA78" strokeWidth="0.6" opacity="0.4"/>
-            </svg>
+        {/* ── FLOWER RAIN ─────────────────────────────────────────────────── */}
+        {([
+          /* Rose petals — soft curved teardrop */
+          { l:"4%",  d:"0s",    t:"18s", type:"rose",    sz:18, col:"#EDE8DC", op:"0.72" },
+          { l:"11%", d:"6.2s",  t:"23s", type:"rose",    sz:13, col:"#F5F0E6", op:"0.60" },
+          { l:"22%", d:"2.8s",  t:"20s", type:"rose",    sz:20, col:"#E8E0D0", op:"0.65" },
+          { l:"34%", d:"9.5s",  t:"26s", type:"rose",    sz:15, col:"#F0EBE0", op:"0.58" },
+          /* Cherry blossom — 5-petal circle */
+          { l:"44%", d:"1.1s",  t:"17s", type:"cherry",  sz:22, col:"#F2ECE0", op:"0.68" },
+          { l:"55%", d:"7.4s",  t:"22s", type:"cherry",  sz:16, col:"#E9E2D4", op:"0.62" },
+          { l:"64%", d:"3.9s",  t:"19s", type:"cherry",  sz:24, col:"#F5F0E8", op:"0.70" },
+          { l:"74%", d:"11.2s", t:"25s", type:"cherry",  sz:14, col:"#ECE6D8", op:"0.55" },
+          /* Floret — tiny daisy */
+          { l:"8%",  d:"4.5s",  t:"21s", type:"floret",  sz:12, col:"#F8F4EC", op:"0.65" },
+          { l:"18%", d:"13s",   t:"28s", type:"floret",  sz:10, col:"#EDE7DB", op:"0.58" },
+          { l:"48%", d:"5.1s",  t:"16s", type:"floret",  sz:14, col:"#F2EDE3", op:"0.62" },
+          { l:"80%", d:"0.8s",  t:"20s", type:"floret",  sz:11, col:"#E8E2D6", op:"0.55" },
+          /* Extra rose petals for density */
+          { l:"88%", d:"8.8s",  t:"22s", type:"rose",    sz:17, col:"#F0EBE1", op:"0.63" },
+          { l:"95%", d:"3.3s",  t:"19s", type:"rose",    sz:12, col:"#F6F1E8", op:"0.57" },
+          { l:"29%", d:"15s",   t:"24s", type:"cherry",  sz:19, col:"#EDE7DC", op:"0.60" },
+          { l:"68%", d:"6.6s",  t:"17s", type:"floret",  sz:13, col:"#F4EFE6", op:"0.64" },
+        ] as const).map((p, i) => {
+          const anim = i % 3 === 0 ? "petal-a" : i % 3 === 1 ? "petal-b" : "petal-c";
+          return (
+          <div key={i} className={`petal ${anim}`} style={{ left: p.l, animationDelay: p.d, animationDuration: p.t }}>
+            {p.type === "rose" && (
+              <svg width={p.sz} height={p.sz * 1.2} viewBox="0 0 24 28" fill="none">
+                {/* Rose petal — curved teardrop */}
+                <path d="M12 2 C8 2 3 7 3 13 C3 20 7 26 12 26 C17 26 21 20 21 13 C21 7 16 2 12 2Z"
+                  fill={p.col} opacity={p.op} />
+                <path d="M12 5 C10 8 9 11 10 16 C10.5 19 11.5 22 12 24"
+                  stroke={p.col} strokeWidth="0.5" opacity="0.3" fill="none"/>
+              </svg>
+            )}
+            {p.type === "cherry" && (
+              <svg width={p.sz} height={p.sz} viewBox="0 0 32 32" fill="none">
+                {/* Cherry blossom — 5 rounded petals */}
+                <ellipse cx="16" cy="7"  rx="4.5" ry="7" fill={p.col} opacity={p.op} />
+                <ellipse cx="16" cy="7"  rx="4.5" ry="7" fill={p.col} opacity={p.op}
+                  transform="rotate(72  16 16)" />
+                <ellipse cx="16" cy="7"  rx="4.5" ry="7" fill={p.col} opacity={p.op}
+                  transform="rotate(144 16 16)" />
+                <ellipse cx="16" cy="7"  rx="4.5" ry="7" fill={p.col} opacity={p.op}
+                  transform="rotate(216 16 16)" />
+                <ellipse cx="16" cy="7"  rx="4.5" ry="7" fill={p.col} opacity={p.op}
+                  transform="rotate(288 16 16)" />
+                <circle cx="16" cy="16" r="2.5" fill={p.col} opacity="0.4" />
+              </svg>
+            )}
+            {p.type === "floret" && (
+              <svg width={p.sz} height={p.sz} viewBox="0 0 24 24" fill="none">
+                {/* Tiny daisy floret — 8 petals */}
+                {[0,45,90,135,180,225,270,315].map((deg, di) => (
+                  <ellipse key={di} cx="12" cy="5" rx="2.2" ry="4.5"
+                    fill={p.col} opacity={p.op}
+                    transform={`rotate(${deg} 12 12)`} />
+                ))}
+                <circle cx="12" cy="12" r="2" fill={p.col} opacity="0.5" />
+              </svg>
+            )}
           </div>
-        ))}
+          );
+        })}
+
 
         {/* ── CUSTOM CURSOR (desktop) ─────────────────────────────────────── */}
         {!isMobile && (
