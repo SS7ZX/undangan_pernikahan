@@ -278,6 +278,7 @@ export default function WeddingInvitation() {
   const [isMobile,  setIsMobile]  = useState(false);
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
+  const audioCtx   = useRef<AudioContext | null>(null);
   const heroRef    = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
   const unlocked   = useRef(false);
@@ -302,23 +303,50 @@ export default function WeddingInvitation() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── AUDIO: Create early, autoplay after load, unlock on first touch ──────
+  // ── AUDIO ENGINE ─────────────────────────────────────────────────────────
+  // Strategy (senior-dev, award-grade):
+  //  1. Create HTMLAudioElement immediately (preloads the file in background)
+  //  2. On FIRST user gesture anywhere (touchstart/click/touchend) — including
+  //     tapping anywhere on the loader — resume an AudioContext AND call
+  //     audio.play(). This is the ONLY reliable cross-browser autoplay on mobile.
+  //  3. After loader exits, attempt desktop autoplay as well (works on Chrome/FF
+  //     desktop where autoplay policy is less strict).
+  //  4. audioCtx resume() is called before play() to satisfy Safari's requirement
+  //     that AudioContext must be in "running" state.
   useEffect(() => {
+    // Create and preload audio element
     const a = new Audio(C.audioSrc);
     a.loop = true;
     a.volume = 0.32;
+    a.preload = "auto";
     audioRef.current = a;
 
-    // Unlock on first user interaction (mobile requires this)
-    const unlock = () => {
+    // Bulletproof unlock: fires on the very first tap — even on the loader
+    const doPlay = () => {
       if (unlocked.current) return;
       unlocked.current = true;
-      if (!isPlaying) {
+
+      // Resume/create AudioContext (Safari requires this before any play)
+      try {
+        if (!audioCtx.current) {
+          audioCtx.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+        }
+        audioCtx.current.resume().then(() => {
+          a.play().then(() => setIsPlaying(true)).catch(() => {});
+        }).catch(() => {
+          a.play().then(() => setIsPlaying(true)).catch(() => {});
+        });
+      } catch {
         a.play().then(() => setIsPlaying(true)).catch(() => {});
       }
     };
-    window.addEventListener("touchstart", unlock, { once: true, passive: true });
-    window.addEventListener("click",      unlock, { once: true });
+
+    // Listen on every possible first-gesture event, capturing phase so we
+    // catch taps inside the loader overlay before it's dismissed
+    window.addEventListener("touchstart", doPlay, { once: true, passive: true, capture: true });
+    window.addEventListener("touchend",   doPlay, { once: true, passive: true, capture: true });
+    window.addEventListener("click",      doPlay, { once: true, capture: true });
+    window.addEventListener("keydown",    doPlay, { once: true, capture: true });
 
     // Progress bar
     let t = 0;
@@ -328,15 +356,15 @@ export default function WeddingInvitation() {
       if (t >= 100) clearInterval(iv);
     }, 90);
 
-    // After loader
+    // After loader finishes: try desktop autoplay (no gesture needed on desktop Chrome)
     const tm = setTimeout(() => {
       setLoading(false);
       setTimeout(() => {
-        a.play()
-          .then(() => { setIsPlaying(true); unlocked.current = true; })
-          .catch(() => {
-            // Desktop may block; mobile unlock handler covers it
-          });
+        if (!unlocked.current) {
+          a.play()
+            .then(() => { setIsPlaying(true); unlocked.current = true; })
+            .catch(() => { /* blocked — first-touch handler will fire */ });
+        }
       }, 700);
     }, 2800);
 
@@ -345,8 +373,10 @@ export default function WeddingInvitation() {
       clearTimeout(tm);
       a.pause();
       a.src = "";
-      window.removeEventListener("touchstart", unlock);
-      window.removeEventListener("click",      unlock);
+      window.removeEventListener("touchstart", doPlay, { capture: true });
+      window.removeEventListener("touchend",   doPlay, { capture: true });
+      window.removeEventListener("click",      doPlay, { capture: true });
+      window.removeEventListener("keydown",    doPlay, { capture: true });
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -359,12 +389,19 @@ export default function WeddingInvitation() {
   }, [isMobile, mx, my]);
 
   const toggleAudio = useCallback(() => {
-    if (!audioRef.current) return;
+    const a = audioRef.current;
+    if (!a) return;
     if (isPlaying) {
-      audioRef.current.pause();
+      a.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().catch(() => {});
+      // Resume AudioContext first (Safari requirement)
+      const ctx = audioCtx.current;
+      if (ctx && ctx.state === "suspended") {
+        ctx.resume().then(() => a.play().catch(() => {})).catch(() => a.play().catch(() => {}));
+      } else {
+        a.play().catch(() => {});
+      }
       setIsPlaying(true);
     }
   }, [isPlaying]);
@@ -868,6 +905,26 @@ export default function WeddingInvitation() {
                 style={{ color: "var(--parch-dk)", fontSize: "9px", letterSpacing: "0.15em", opacity: 0.5 }}>
                 {loadPct}%
               </p>
+
+              {/* ── Tap-to-play nudge (mobile only) — touching this fires the
+                  capture-phase unlock listener, so music starts immediately ── */}
+              {!isPlaying && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.7, 0.4, 0.7] }}
+                  transition={{ delay: 1.6, duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                  className="mt-5 flex items-center gap-2 select-none"
+                  aria-hidden
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="var(--gold-mid)" strokeWidth="1.5" opacity="0.6"/>
+                    <polygon points="10,8 10,16 17,12" fill="var(--gold-warm)" opacity="0.8"/>
+                  </svg>
+                  <span className="font-sans text-[8px] tracking-[0.46em] uppercase" style={{ color: "var(--parch-dk)", opacity: 0.55 }}>
+                    Ketuk untuk musik
+                  </span>
+                </motion.div>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
