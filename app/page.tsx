@@ -267,7 +267,11 @@ RSVPLink.displayName = "RSVPLink";
 export default function WeddingInvitation() {
   const prefersReducedMotion = useReducedMotion();
 
-  const [loading,   setLoading]   = useState(true);
+  // ── PHASE STATE ──────────────────────────────────────────────────────────
+  // phase 1: "splash"  — fullscreen tap-to-open gate (preloads audio silently)
+  // phase 2: "loading" — mandala loader plays (audio already unlocked & playing)
+  // phase 3: "ready"   — invitation content visible
+  const [phase,     setPhase]     = useState<"splash"|"loading"|"ready">("splash");
   const [loadPct,   setLoadPct]   = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [copied,    setCopied]    = useState<"" | "1" | "2">("");
@@ -278,10 +282,11 @@ export default function WeddingInvitation() {
   const [isMobile,  setIsMobile]  = useState(false);
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
-  const audioCtx   = useRef<AudioContext | null>(null);
   const heroRef    = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
-  const unlocked   = useRef(false);
+
+  // Derived booleans
+  const loading = phase === "loading";
 
   // Custom cursor (desktop only)
   const mx = useMotionValue(-300);
@@ -303,82 +308,46 @@ export default function WeddingInvitation() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── AUDIO ENGINE ─────────────────────────────────────────────────────────
-  // Strategy (senior-dev, award-grade):
-  //  1. Create HTMLAudioElement immediately (preloads the file in background)
-  //  2. On FIRST user gesture anywhere (touchstart/click/touchend) — including
-  //     tapping anywhere on the loader — resume an AudioContext AND call
-  //     audio.play(). This is the ONLY reliable cross-browser autoplay on mobile.
-  //  3. After loader exits, attempt desktop autoplay as well (works on Chrome/FF
-  //     desktop where autoplay policy is less strict).
-  //  4. audioCtx resume() is called before play() to satisfy Safari's requirement
-  //     that AudioContext must be in "running" state.
+  // ── AUDIO: preload silently on mount, play on splash tap ─────────────────
   useEffect(() => {
-    // Create and preload audio element
     const a = new Audio(C.audioSrc);
-    a.loop = true;
-    a.volume = 0.32;
+    a.loop    = true;
+    a.volume  = 0;        // silent while preloading — will fade in after tap
     a.preload = "auto";
     audioRef.current = a;
+    return () => { a.pause(); a.src = ""; };
+  }, []);
 
-    // Bulletproof unlock: fires on the very first tap — even on the loader
-    const doPlay = () => {
-      if (unlocked.current) return;
-      unlocked.current = true;
+  // ── SPLASH TAP HANDLER ────────────────────────────────────────────────────
+  // This is the user gesture. Browser sees it as trusted interaction.
+  // Audio starts HERE — guaranteed to work on every browser including iOS Safari.
+  const handleSplashTap = useCallback(() => {
+    const a = audioRef.current;
+    if (!a) return;
 
-      // Resume/create AudioContext (Safari requires this before any play)
-      try {
-        if (!audioCtx.current) {
-          audioCtx.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-        }
-        audioCtx.current.resume().then(() => {
-          a.play().then(() => setIsPlaying(true)).catch(() => {});
-        }).catch(() => {
-          a.play().then(() => setIsPlaying(true)).catch(() => {});
-        });
-      } catch {
-        a.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    };
+    // Fade volume up smoothly from 0 → 0.32 over 1.5s
+    a.volume = 0;
+    a.play().then(() => {
+      setIsPlaying(true);
+      let v = 0;
+      const fade = setInterval(() => {
+        v = Math.min(v + 0.02, 0.32);
+        a.volume = v;
+        if (v >= 0.32) clearInterval(fade);
+      }, 90);
+    }).catch(() => {});
 
-    // Listen on every possible first-gesture event, capturing phase so we
-    // catch taps inside the loader overlay before it's dismissed
-    window.addEventListener("touchstart", doPlay, { once: true, passive: true, capture: true });
-    window.addEventListener("touchend",   doPlay, { once: true, passive: true, capture: true });
-    window.addEventListener("click",      doPlay, { once: true, capture: true });
-    window.addEventListener("keydown",    doPlay, { once: true, capture: true });
+    // Transition to loading phase
+    setPhase("loading");
 
-    // Progress bar
+    // Run progress bar, then reveal invitation
     let t = 0;
     const iv = setInterval(() => {
       t += Math.random() * 18 + 10;
       setLoadPct(Math.min(Math.round(t), 100));
       if (t >= 100) clearInterval(iv);
     }, 90);
-
-    // After loader finishes: try desktop autoplay (no gesture needed on desktop Chrome)
-    const tm = setTimeout(() => {
-      setLoading(false);
-      setTimeout(() => {
-        if (!unlocked.current) {
-          a.play()
-            .then(() => { setIsPlaying(true); unlocked.current = true; })
-            .catch(() => { /* blocked — first-touch handler will fire */ });
-        }
-      }, 700);
-    }, 2800);
-
-    return () => {
-      clearInterval(iv);
-      clearTimeout(tm);
-      a.pause();
-      a.src = "";
-      window.removeEventListener("touchstart", doPlay, { capture: true });
-      window.removeEventListener("touchend",   doPlay, { capture: true });
-      window.removeEventListener("click",      doPlay, { capture: true });
-      window.removeEventListener("keydown",    doPlay, { capture: true });
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setTimeout(() => setPhase("ready"), 2800);
   }, []);
 
   useEffect(() => {
@@ -395,13 +364,7 @@ export default function WeddingInvitation() {
       a.pause();
       setIsPlaying(false);
     } else {
-      // Resume AudioContext first (Safari requirement)
-      const ctx = audioCtx.current;
-      if (ctx && ctx.state === "suspended") {
-        ctx.resume().then(() => a.play().catch(() => {})).catch(() => a.play().catch(() => {}));
-      } else {
-        a.play().catch(() => {});
-      }
+      a.play().catch(() => {});
       setIsPlaying(true);
     }
   }, [isPlaying]);
@@ -648,10 +611,142 @@ export default function WeddingInvitation() {
         )}
 
         {/* ════════════════════════════════════════════════════════════════════
-            PRE-LOADER — Cream Mandala (warm parchment palette)
+            PHASE 1 — SPLASH GATE
+            The entire screen IS the gesture. User taps anywhere = music plays.
+            No button, no UI chrome — just fullscreen parchment with pulsing text.
         ════════════════════════════════════════════════════════════════════ */}
         <AnimatePresence>
-          {loading && (
+          {phase === "splash" && (
+            <motion.div
+              key="splash"
+              className="fixed inset-0 z-[9995] flex flex-col items-center justify-center overflow-hidden select-none"
+              style={{ background: "var(--parch)", cursor: "pointer" }}
+              exit={{ opacity: 0, scale: 1.04, transition: { duration: 0.55, ease: [0.4,0,0.2,1] } }}
+              onClick={handleSplashTap}
+              onTouchEnd={e => { e.preventDefault(); handleSplashTap(); }}
+            >
+              {/* Warm radial bg */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: "radial-gradient(ellipse 75% 60% at 50% 48%, rgba(248,236,196,0.95) 0%, rgba(230,210,160,0.5) 55%, transparent 80%)",
+              }} />
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: "radial-gradient(ellipse 100% 100% at 50% 50%, transparent 45%, rgba(175,140,76,0.2) 100%)",
+              }} />
+
+              {/* Corner ornaments */}
+              {(["tl","tr","bl","br"] as const).map((c, i) => (
+                <motion.div
+                  key={c}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 + i * 0.08, duration: 0.6 }}
+                  className="absolute pointer-events-none"
+                  style={{
+                    top:    c.startsWith("t") ? 12 : "auto",
+                    bottom: c.startsWith("b") ? 12 : "auto",
+                    left:   c.endsWith("l")   ? 12 : "auto",
+                    right:  c.endsWith("r")   ? 12 : "auto",
+                    transform: c === "tr" ? "scaleX(-1)" : c === "bl" ? "scaleY(-1)" : c === "br" ? "scale(-1,-1)" : "none",
+                  }}
+                >
+                  <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+                    <path d="M2 2 L22 2 M2 2 L2 22" stroke="var(--gold-mid)" strokeWidth="1.8" opacity="0.55" strokeLinecap="round"/>
+                    <path d="M9 2 L9 9 L2 9" stroke="var(--gold-warm)" strokeWidth="0.8" opacity="0.4" fill="none"/>
+                    <circle cx="2" cy="2" r="2.2" fill="var(--gold-mid)" opacity="0.55"/>
+                  </svg>
+                </motion.div>
+              ))}
+
+              {/* Top + bottom bands */}
+              {["top-0","bottom-0"].map(pos => (
+                <div key={pos} className={`absolute ${pos} inset-x-0 pointer-events-none`}>
+                  <div className="h-[3px]" style={{ background: "linear-gradient(90deg,transparent,var(--gold-mid) 25%,var(--gold-deep) 50%,var(--gold-mid) 75%,transparent)" }} />
+                </div>
+              ))}
+
+              {/* Initials — big, bold, breathing */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.9, ease: [0.16,1,0.3,1] }}
+                className="flex flex-col items-center gap-4 mb-10"
+              >
+                <p
+                  className="font-sc text-center"
+                  style={{
+                    fontSize: "clamp(4rem, 22vw, 7.5rem)",
+                    color: "var(--gold-deep)",
+                    letterSpacing: "0.22em",
+                    lineHeight: 1,
+                    fontWeight: 600,
+                    textShadow: "0 4px 24px rgba(139,105,20,0.18)",
+                  }}
+                >
+                  {C.bride[0]}
+                  <span style={{ color: "var(--gold-warm)", fontSize: "0.6em", fontWeight: 300, margin: "0 0.15em" }}>✦</span>
+                  {C.groom[0]}
+                </p>
+
+                <div className="flex items-center gap-3">
+                  <div className="h-px w-14" style={{ background: "linear-gradient(to right,transparent,var(--gold-mid))" }} />
+                  <p className="font-serif text-center" style={{
+                    fontSize: "clamp(0.85rem, 3.5vw, 1.15rem)",
+                    color: "var(--gold-deep)",
+                    letterSpacing: "0.16em",
+                    fontWeight: 500,
+                    opacity: 0.75,
+                  }}>
+                    {C.brideFull} &amp; {C.groomFull}
+                  </p>
+                  <div className="h-px w-14" style={{ background: "linear-gradient(to left,transparent,var(--gold-mid))" }} />
+                </div>
+              </motion.div>
+
+              {/* "Buka Undangan" — pulsing CTA, whole screen tappable */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="flex flex-col items-center gap-3"
+              >
+                {/* Animated ring */}
+                <motion.div
+                  animate={{ scale: [1, 1.18, 1], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-14 h-14 rounded-full flex items-center justify-center"
+                  style={{ border: "1.5px solid var(--gold-mid)" }}
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.4, 1] }}
+                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                    className="w-8 h-8 rounded-full"
+                    style={{ background: "radial-gradient(circle, var(--gold-warm) 30%, transparent 70%)", opacity: 0.7 }}
+                  />
+                </motion.div>
+                <p className="font-sans text-[10px] tracking-[0.55em] uppercase" style={{ color: "var(--gold-deep)", opacity: 0.6 }}>
+                  Ketuk untuk membuka
+                </p>
+              </motion.div>
+
+              {/* Date at bottom */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.45 }}
+                transition={{ delay: 0.7 }}
+                className="absolute bottom-8 font-sans text-[9px] tracking-[0.46em] uppercase"
+                style={{ color: "var(--gold-deep)" }}
+              >
+                {C.dateFormal}
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            PHASE 2 — CREAM MANDALA LOADER
+        ════════════════════════════════════════════════════════════════════ */}
+        <AnimatePresence>
+          {phase === "loading" && (
             <motion.div
               key="loader"
               className="fixed inset-0 z-[9990] flex flex-col items-center justify-center overflow-hidden"
@@ -905,26 +1000,6 @@ export default function WeddingInvitation() {
                 style={{ color: "var(--parch-dk)", fontSize: "9px", letterSpacing: "0.15em", opacity: 0.5 }}>
                 {loadPct}%
               </p>
-
-              {/* ── Tap-to-play nudge (mobile only) — touching this fires the
-                  capture-phase unlock listener, so music starts immediately ── */}
-              {!isPlaying && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, 0.7, 0.4, 0.7] }}
-                  transition={{ delay: 1.6, duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
-                  className="mt-5 flex items-center gap-2 select-none"
-                  aria-hidden
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="10" stroke="var(--gold-mid)" strokeWidth="1.5" opacity="0.6"/>
-                    <polygon points="10,8 10,16 17,12" fill="var(--gold-warm)" opacity="0.8"/>
-                  </svg>
-                  <span className="font-sans text-[8px] tracking-[0.46em] uppercase" style={{ color: "var(--parch-dk)", opacity: 0.55 }}>
-                    Ketuk untuk musik
-                  </span>
-                </motion.div>
-              )}
             </motion.div>
           )}
         </AnimatePresence>
@@ -980,7 +1055,7 @@ export default function WeddingInvitation() {
           {/* Corner floral — top left */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
-            animate={!loading ? { opacity: 0.16, scale: 1, rotate: 0 } : {}}
+            animate={phase === "ready" ? { opacity: 0.16, scale: 1, rotate: 0 } : {}}
             transition={{ delay: 1, duration: 2, ease }}
             className="absolute top-0 left-0 pointer-events-none select-none"
             style={{ fontSize: "10rem", lineHeight: 1, color: "var(--sage-l)", userSelect: "none", fontFamily: "serif" }}
@@ -990,7 +1065,7 @@ export default function WeddingInvitation() {
           {/* Corner floral — bottom right */}
           <motion.div
             initial={{ opacity: 0, scale: 0.5, rotate: 20 }}
-            animate={!loading ? { opacity: 0.16, scale: 1, rotate: 0 } : {}}
+            animate={phase === "ready" ? { opacity: 0.16, scale: 1, rotate: 0 } : {}}
             transition={{ delay: 1.2, duration: 2, ease }}
             className="absolute bottom-16 right-0 pointer-events-none select-none"
             style={{ fontSize: "10rem", lineHeight: 1, color: "var(--sage-l)", transform: "scaleX(-1) rotate(-15deg)", userSelect: "none", fontFamily: "serif" }}
@@ -1000,7 +1075,7 @@ export default function WeddingInvitation() {
           {/* Date pill */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
-            animate={!loading ? { opacity: 1, y: 0 } : {}}
+            animate={phase === "ready" ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.7, duration: 0.9 }}
             className="absolute flex justify-center w-full px-6"
             style={{ top: "calc(env(safe-area-inset-top, 0px) + 20px)" }}
@@ -1019,7 +1094,7 @@ export default function WeddingInvitation() {
           <motion.div style={{ y: heroTY }} className="flex flex-col items-center z-10 w-full">
             <motion.div
               initial="hidden"
-              animate={!loading ? "visible" : "hidden"}
+              animate={phase === "ready" ? "visible" : "hidden"}
               variants={vStagger}
               className="flex flex-col items-center"
             >
