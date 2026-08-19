@@ -1199,7 +1199,7 @@ export default function WeddingInvitation() {
         <section ref={galleryRef} className="py-16 px-4 overflow-hidden" style={{ background: "var(--cream)" }}>
           <div className="max-w-2xl mx-auto">
             <div className="flex flex-col md:flex-row gap-4 md:gap-5 items-center md:items-end justify-center">
-              <motion.div style={{ y: p1Y }} className="w-full md:w-[52%] flex-shrink-0">
+              <motion.div style={{ y: p1Y }} className="-mt-3 w-full md:mt-0 md:w-[52%] flex-shrink-0">
                 <motion.div
                   initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 1.1, ease }}
