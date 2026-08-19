@@ -286,9 +286,6 @@ export default function WeddingInvitation() {
   const heroRef    = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
 
-  // Derived booleans
-  const loading = phase === "loading";
-
   // Custom cursor (desktop only)
   const mx = useMotionValue(-300);
   const my = useMotionValue(-300);
@@ -1179,7 +1176,7 @@ export default function WeddingInvitation() {
             <motion.div variants={vIn} className="font-serif leading-none select-none" style={{
               fontSize: "7rem", lineHeight: 0.75, color: "var(--sage-l)", marginBottom: "-1.2rem",
             }}>
-              "
+              &quot;
             </motion.div>
             <motion.p variants={vUp} className="font-serif font-light italic leading-[1.85] text-xl md:text-2xl" style={{ color: "#5A5850" }}>
               {C.quote}
