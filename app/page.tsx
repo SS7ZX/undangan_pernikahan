@@ -55,6 +55,7 @@ const C = {
   audioSrc:      "/wedding-song.mp3",
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
+  photo3:        "/photo3.jpeg",
   qrisImg:       "/qris.png",
   quote:         "Dua jiwa yang menemukan rumah satu sama lain — kami bersyukur kau hadir menyaksikan awal perjalanan kami.",
   quoteEn:       "Two souls that found home in each other.",
@@ -300,6 +301,7 @@ export default function WeddingInvitation() {
   const heroTY  = useParallax(heroSY,    isMobile || prefersReducedMotion ? ["0%","0%"] : ["0%","18%"]);
   const p1Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["-8%","8%"]);
   const p2Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["8%","-8%"]);
+  const p3Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["-5%","5%"]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -1246,6 +1248,28 @@ export default function WeddingInvitation() {
                 </motion.div>
               </motion.div>
             </div>
+
+            <motion.div style={{ y: p3Y }} className="w-full md:w-[58%] md:ml-auto md:mr-[8%] mt-4 md:mt-10">
+              <motion.div
+                initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ duration: 1.1, delay: 0.3, ease }}
+                className="relative w-full rounded-3xl overflow-hidden"
+                style={{
+                  height: "clamp(360px, 78vw, 540px)",
+                  background: "#EDF1E4",
+                  boxShadow: "0 24px 72px rgba(30,34,25,0.10)",
+                }}
+              >
+                <Image
+                  src={C.photo3} alt={`${C.groomFull} & ${C.brideFull}`}
+                  fill sizes="(max-width:768px) 100vw, 58vw"
+                  style={{ objectFit: "contain", objectPosition: "center center" }}
+                />
+                <div className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none" style={{
+                  background: "linear-gradient(to top, rgba(30,34,25,0.08), transparent)",
+                }} />
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
