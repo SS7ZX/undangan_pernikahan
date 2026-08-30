@@ -281,6 +281,7 @@ export default function WeddingInvitation() {
   const [msg,       setMsg]       = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isMobile,  setIsMobile]  = useState(false);
+  const [guestName, setGuestName] = useState("Tamu Undangan");
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
   const heroRef    = useRef<HTMLElement>(null);
@@ -305,6 +306,23 @@ export default function WeddingInvitation() {
     check();
     window.addEventListener("resize", check, { passive: true });
     return () => window.removeEventListener("resize", check);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const rawGuestName =
+      params.get("to") ??
+      params.get("nama") ??
+      params.get("guest") ??
+      "";
+
+    const cleanedGuestName = rawGuestName
+      .replace(/\s+/g, " ")
+      .trim();
+
+    setGuestName(cleanedGuestName || "Tamu Undangan");
   }, []);
 
   // ── AUDIO: preload silently on mount, play on splash tap ─────────────────
@@ -1097,6 +1115,10 @@ export default function WeddingInvitation() {
               variants={vStagger}
               className="flex flex-col items-center"
             >
+              <motion.p variants={vUp} className="font-sans text-[9px] tracking-[0.38em] uppercase mb-4" style={{ color: "#ABABA0" }}>
+                Kepada Yth. {guestName}
+              </motion.p>
+
               <motion.p variants={vUp} className="font-sans text-[9px] tracking-[0.5em] uppercase mb-10" style={{ color: "#ABABA0" }}>
                 Bersama keluarga, mengundang kehadiran Anda
               </motion.p>
