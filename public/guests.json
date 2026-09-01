@@ -1,0 +1,68 @@
+[
+  {
+    "id": 1,
+    "name": "Rian Pebriansyah, S.Psi",
+    "slug": "rian-pebriansyah",
+    "relation": "Pengantin Pria",
+    "category": "groom",
+    "email": "rian@example.com",
+    "phone": "62895369942679",
+    "attendance": null,
+    "notes": ""
+  },
+  {
+    "id": 2,
+    "name": "Windi Nuraeni",
+    "slug": "windi-nuraeni",
+    "relation": "Pengantin Wanita",
+    "category": "bride",
+    "email": "windi@example.com",
+    "phone": "62895369942679",
+    "attendance": null,
+    "notes": ""
+  },
+  {
+    "id": 3,
+    "name": "Budi Santoso",
+    "slug": "budi-santoso",
+    "relation": "Keluarga Besar",
+    "category": "family",
+    "email": "budi@example.com",
+    "phone": "628123456789",
+    "attendance": null,
+    "notes": "Kakak kandung"
+  },
+  {
+    "id": 4,
+    "name": "Siti Nurhaliza",
+    "slug": "siti-nurhaliza",
+    "relation": "Sahabat",
+    "category": "friend",
+    "email": "siti@example.com",
+    "phone": "628987654321",
+    "attendance": null,
+    "notes": "Teman sejak SMA"
+  },
+  {
+    "id": 5,
+    "name": "Ahmad Wijaya",
+    "slug": "ahmad-wijaya",
+    "relation": "Teman Kerja",
+    "category": "colleague",
+    "email": "ahmad@example.com",
+    "phone": "628765432109",
+    "attendance": null,
+    "notes": ""
+  },
+  {
+    "id": 6,
+    "name": "Ratna Kusuma",
+    "slug": "ratna-kusuma",
+    "relation": "Tetangga",
+    "category": "neighbor",
+    "email": "ratna@example.com",
+    "phone": "628654321098",
+    "attendance": null,
+    "notes": ""
+  }
+]
