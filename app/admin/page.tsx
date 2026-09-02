@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Copy, Check, Share2, Download, Filter, Search,
-  Users, BarChart3, Mail, MessageSquare, ArrowUpRight,
+  Users, BarChart3, Mail, MessageSquare, ArrowUpRight, Plus, X,
 } from "lucide-react";
 import type { Guest, GuestStats } from "@/lib/types";
 import {
@@ -30,6 +30,10 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newGuestName, setNewGuestName] = useState("");
+  const [addError, setAddError] = useState("");
+  const [addingGuest, setAddingGuest] = useState(false);
 
   // Load guests on mount
   useEffect(() => {
@@ -42,6 +46,34 @@ export default function AdminDashboard() {
     setGuests(data);
     setStats(calculateGuestStats(data));
     setLoading(false);
+  };
+
+  const handleAddGuest = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!newGuestName.trim()) {
+      setAddError("Nama tamu wajib diisi");
+      return;
+    }
+
+    setAddingGuest(true);
+    setAddError("");
+    try {
+      const response = await fetch("/api/guests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newGuestName }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Tamu gagal ditambahkan");
+
+      setNewGuestName("");
+      setShowAddForm(false);
+      await loadGuests();
+    } catch (error) {
+      setAddError(error instanceof Error ? error.message : "Tamu gagal ditambahkan");
+    } finally {
+      setAddingGuest(false);
+    }
   };
 
   // Filter & search
@@ -110,18 +142,52 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-slate-900">Guest Management</h1>
               <p className="text-slate-600 mt-1">Manage invitations & track RSVPs</p>
             </div>
-            <button
-              onClick={handleExportCSV}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition"
-            >
-              <Download size={18} />
-              Export CSV
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowAddForm((isOpen) => !isOpen)}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+              >
+                {showAddForm ? <X size={18} /> : <Plus size={18} />}
+                {showAddForm ? "Tutup" : "Tambah Tamu"}
+              </button>
+              <button
+                onClick={handleExportCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition"
+              >
+                <Download size={18} />
+                Export CSV
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {showAddForm && (
+          <form onSubmit={handleAddGuest} className="bg-white rounded-lg border border-emerald-200 p-4 mb-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                autoFocus
+                type="text"
+                value={newGuestName}
+                onChange={(event) => setNewGuestName(event.target.value)}
+                placeholder="Ketik nama tamu..."
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                disabled={addingGuest}
+              />
+              <button
+                type="submit"
+                disabled={addingGuest}
+                className="px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-60 transition"
+              >
+                {addingGuest ? "Menyimpan..." : "Simpan Nama"}
+              </button>
+            </div>
+            {addError && <p className="text-sm text-red-600 mt-2">{addError}</p>}
+            <p className="text-xs text-slate-500 mt-2">Link undangan akan dibuat otomatis dari nama tamu.</p>
+          </form>
+        )}
+
         {/* Stats Grid */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
