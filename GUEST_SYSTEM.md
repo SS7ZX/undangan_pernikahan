@@ -20,10 +20,10 @@ Sistem digital untuk mengelola tamu pernikahan dengan link undangan personal unt
 - 💌 Call-to-action untuk RSVP
 
 ### 3. **Data Management**
-- 📁 Static JSON storage (`public/guests.json`)
+- 📁 Imported workbook storage (`_generated-guests.json`) via `/api/guests`
 - 🏷️ Unique slug per tamu
 - 📊 Tracking status RSVP
-- 🏷️ Kategori tamu (keluarga, sahabat, dll)
+- 🏷️ Tipe undangan (fisik/digital) dan kategori tamu
 
 ## 🚀 Cara Memulai
 
@@ -56,8 +56,9 @@ lib/
 ├── guests.ts             # Guest utilities & API
 └── guest-utils.ts        # Template & helper functions
 
+_generated-guests.json    # Database hasil import workbook
 public/
-└── guests.json           # Database tamu
+└── guests.json           # Data fallback/template lama
 
 ```
 
@@ -65,7 +66,7 @@ public/
 
 ### 1. Kelola Daftar Tamu
 
-Edit `public/guests.json` untuk menambah/mengubah tamu:
+Edit `_generated-guests.json` untuk menambah/mengubah tamu:
 
 ```json
 [
@@ -74,7 +75,7 @@ Edit `public/guests.json` untuk menambah/mengubah tamu:
     "name": "Nama Lengkap",
     "slug": "nama-lengkap",           // URL-friendly (auto-generate)
     "relation": "Hubungan",
-    "category": "family",             // family|friend|colleague|neighbor|groom|bride
+    "category": "guest",              // guest|family|friend|colleague|neighbor|groom|bride
     "email": "email@example.com",
     "phone": "62895369942679",        // Format: 62XXX...
     "attendance": null,               // yes|no|maybe|null
@@ -90,6 +91,7 @@ Edit `public/guests.json` untuk menambah/mengubah tamu:
 - `friend` - Sahabat
 - `colleague` - Teman kerja
 - `neighbor` - Tetangga
+- `guest` - Tamu undangan umum
 
 ### 2. Copy Link Undangan
 
@@ -117,7 +119,7 @@ Klik **Export CSV** untuk download daftar tamu.
 ## 🎨 Kustomisasi
 
 ### Edit Data Tamu
-Edit `public/guests.json` langsung di text editor atau IDE.
+Edit `_generated-guests.json` langsung di text editor atau IDE. Nomor telepon boleh dikosongkan; tombol WhatsApp akan membuka pemilih kontak.
 
 ### Edit Teks Undangan
 Edit `app/guest/[slug]/page.tsx` untuk mengubah teks dan data pernikahan:

@@ -1,3 +1,5 @@
+import type { Guest } from "./types";
+
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * GUEST MANAGEMENT SYSTEM — API UTILITIES
@@ -16,7 +18,7 @@
 export function generateWhatsAppMessage(guestName: string, guestLink: string): string {
   return `Assalamu'alaikum ${guestName} 👋
 
-Kami dengan gembira mengundang Anda merayakan pernikahan kami:
+Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir dan memberikan doa restu pada pernikahan kami:
 
 ✨ *Rian Pebriansyah* 💍 *Windi Nuraeni* ✨
 
@@ -24,12 +26,12 @@ Kami dengan gembira mengundang Anda merayakan pernikahan kami:
 🕐 Pukul 08.00 WIB
 📍 Rumah Mempelai Wanita
 
-Buka undangan digital Anda:
+Buka undangan digital personal Anda:
 ${guestLink}
 
-Mohon untuk memberikan konfirmasi kehadiran melalui link di atas.
+Mohon kesediaannya untuk membuka undangan dan melakukan konfirmasi kehadiran melalui link di atas.
 
-Terima kasih! 🙏💕`;
+Terima kasih atas perhatian dan doa restunya. 🙏💕`;
 }
 
 /**
@@ -99,7 +101,7 @@ export function generateEmailTemplate(guestName: string, guestLink: string): {
 /**
  * Generate guest CSV export
  */
-export function generateGuestCSV(guests: any[]): string {
+export function generateGuestCSV(guests: Guest[]): string {
   const headers = ["No", "Nama", "Hubungan", "Kategori", "Email", "Telepon"];
   const rows = guests.map((g, i) => [
     i + 1,
@@ -132,6 +134,8 @@ export function isValidGuestSlug(slug: string): boolean {
 export function formatPhoneForWhatsApp(phone: string): string {
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, "");
+
+  if (!cleaned) return "";
   
   // If starts with 0, replace with 62
   if (cleaned.startsWith("0")) {

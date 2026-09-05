@@ -9,8 +9,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Copy, Check, Share2, Download, Filter, Search,
-  Users, BarChart3, Mail, MessageSquare, ArrowUpRight, Plus, X,
+  Copy, Check, Share2, Download, Search,
+  Users, BarChart3, MessageSquare, ArrowUpRight, Plus, X,
 } from "lucide-react";
 import type { Guest, GuestStats } from "@/lib/types";
 import {
@@ -22,6 +22,7 @@ import {
   filterGuestsByCategory,
   sortGuestsByName,
 } from "@/lib/guests";
+import { formatPhoneForWhatsApp, generateWhatsAppMessage } from "@/lib/guest-utils";
 
 export default function AdminDashboard() {
   const [guests, setGuests] = useState<Guest[]>([]);
@@ -115,15 +116,15 @@ export default function AdminDashboard() {
   // Send WhatsApp
   const handleSendWhatsApp = (name: string, slug: string, phone: string) => {
     const link = generateGuestLink(slug);
-    const message = encodeURIComponent(
-      `Halo ${name} 👋\n\nKami dengan gembira mengundang Anda merayakan pernikahan kami!\n\nBuka undangan digital Anda di:\n${link}\n\nTerima kasih! 💕`
-    );
-    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+    const message = encodeURIComponent(generateWhatsAppMessage(name, link));
+    const normalizedPhone = formatPhoneForWhatsApp(phone);
+    const target = normalizedPhone ? `https://wa.me/${normalizedPhone}` : "https://wa.me/";
+    window.open(`${target}?text=${message}`, "_blank", "noopener,noreferrer");
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-300 border-t-slate-600 mx-auto mb-4" />
           <p className="text-slate-600 font-medium">Loading guest data...</p>
@@ -133,7 +134,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-slate-50 to-slate-100">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -218,7 +219,7 @@ export default function AdminDashboard() {
             <StatCard
               icon={BarChart3}
               label="Kehadiran"
-              value={`${Math.round((stats.attended / stats.total) * 100)}%`}
+              value={`${stats.total ? Math.round((stats.attended / stats.total) * 100) : 0}%`}
               color="purple"
             />
           </div>
@@ -244,7 +245,7 @@ export default function AdminDashboard() {
 
             {/* Category Filter */}
             <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-              {["all", "groom", "bride", "family", "friend", "colleague", "neighbor"].map((cat) => (
+                {['all', 'groom', 'bride', 'family', 'friend', 'colleague', 'neighbor', 'guest'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -371,7 +372,7 @@ function StatCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-gradient-to-br ${colorClasses[color]} border p-6 rounded-lg`}
+      className={`bg-linear-to-br ${colorClasses[color]} border p-6 rounded-lg`}
     >
       <div className="flex items-start justify-between">
         <div>

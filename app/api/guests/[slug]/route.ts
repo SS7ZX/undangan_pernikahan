@@ -32,7 +32,7 @@ export async function GET(
       success: true,
       data: guest,
     });
-  } catch (error) {
+  } catch {
     return Response.json(
       { success: false, error: "Failed to fetch guest" },
       { status: 500 }

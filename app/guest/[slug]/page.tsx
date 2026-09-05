@@ -9,10 +9,11 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Heart, Copy, Check, Share2, Download } from "lucide-react";
+import { Heart, Copy, Check, Share2, MessageCircle } from "lucide-react";
 import { useParams } from "next/navigation";
 import type { Guest } from "@/lib/types";
 import { fetchGuestBySlug, generateGuestLink } from "@/lib/guests";
+import { formatPhoneForWhatsApp, generateWhatsAppMessage } from "@/lib/guest-utils";
 
 // Re-export the main invitation component styles & config
 const C = {
@@ -39,14 +40,14 @@ export default function GuestInvitationPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadGuest();
+    let active = true;
+    fetchGuestBySlug(slug).then((data) => {
+      if (!active) return;
+      setGuest(data);
+      setLoading(false);
+    });
+    return () => { active = false; };
   }, [slug]);
-
-  const loadGuest = async () => {
-    const data = await fetchGuestBySlug(slug);
-    setGuest(data);
-    setLoading(false);
-  };
 
   const handleCopyLink = () => {
     const link = generateGuestLink(slug);
@@ -57,17 +58,32 @@ export default function GuestInvitationPage() {
 
   const handleShare = async () => {
     const link = generateGuestLink(slug);
+    const message = generateWhatsAppMessage(guest?.name || "Tamu Undangan", link);
     if (navigator.share) {
       try {
         await navigator.share({
           title: "Undangan Pernikahan",
-          text: `Undangan untuk ${guest?.name}`,
+          text: message,
           url: link,
         });
-      } catch (err) {
+      } catch {
         console.log("Share cancelled");
       }
+    } else {
+      const phone = formatPhoneForWhatsApp(guest?.phone || "");
+      const target = phone ? `https://wa.me/${phone}` : "https://wa.me/";
+      window.open(`${target}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     }
+  };
+
+  const handleWhatsAppRSVP = (attendance: "yes" | "no") => {
+    const guestDisplayName = guest?.name || "Tamu Undangan";
+    const phone = formatPhoneForWhatsApp(guest?.phone || "");
+    const message = attendance === "yes"
+      ? `Assalamu'alaikum, saya ${guestDisplayName} menyatakan *hadir* di pernikahan Rian Pebriansyah & Windi Nuraeni pada ${C.date}. Terima kasih 🙏`
+      : `Assalamu'alaikum, saya ${guestDisplayName} mohon maaf *tidak dapat hadir* di pernikahan Rian Pebriansyah & Windi Nuraeni. Semoga acaranya lancar 🙏`;
+    const target = phone ? `https://wa.me/${phone}` : "https://wa.me/";
+    window.open(`${target}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
   };
 
   if (loading) {
@@ -132,7 +148,7 @@ export default function GuestInvitationPage() {
           {/* Quote */}
           <div className="text-center mb-8">
             <p className="text-lg text-slate-700 italic mb-4">
-              "{C.quote}"
+              &quot;{C.quote}&quot;
             </p>
             <div className="w-12 h-1 bg-rose-400 mx-auto" />
           </div>
@@ -208,6 +224,22 @@ export default function GuestInvitationPage() {
             >
               <Share2 size={20} />
               Share
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <button
+              onClick={() => handleWhatsAppRSVP("yes")}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition font-medium"
+            >
+              <MessageCircle size={18} />
+              Hadir
+            </button>
+            <button
+              onClick={() => handleWhatsAppRSVP("no")}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 rounded-lg transition font-medium"
+            >
+              Tidak Hadir
             </button>
           </div>
 

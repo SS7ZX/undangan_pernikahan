@@ -8,7 +8,10 @@ export type GuestCategory =
   | "family" 
   | "friend" 
   | "colleague" 
-  | "neighbor";
+  | "neighbor"
+  | "guest";
+
+export type InvitationType = "physical" | "digital";
 
 export type AttendanceStatus = "yes" | "no" | "maybe" | null;
 
@@ -22,6 +25,7 @@ export interface Guest {
   phone: string;
   attendance: AttendanceStatus;
   notes: string;
+  invitationType?: InvitationType;
 }
 
 export interface GuestWithLink extends Guest {

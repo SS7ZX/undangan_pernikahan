@@ -322,7 +322,10 @@ export default function WeddingInvitation() {
       .replace(/\s+/g, " ")
       .trim();
 
-    setGuestName(cleanedGuestName || "Tamu Undangan");
+    const timer = window.setTimeout(() => {
+      setGuestName(cleanedGuestName || "Tamu Undangan");
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   // ── AUDIO: preload silently on mount, play on splash tap ─────────────────

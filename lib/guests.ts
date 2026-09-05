@@ -9,11 +9,12 @@ import type { Guest, GuestStats } from "./types";
  */
 export async function fetchAllGuests(): Promise<Guest[]> {
   try {
-    const response = await fetch("/guests.json", {
+    const response = await fetch("/api/guests", {
       cache: "no-store",
     });
     if (!response.ok) throw new Error("Failed to fetch guests");
-    return response.json();
+    const result = await response.json();
+    return result.data || [];
   } catch (error) {
     console.error("Error fetching guests:", error);
     return [];
@@ -54,6 +55,7 @@ export function calculateGuestStats(guests: Guest[]): GuestStats {
       friend: 0,
       colleague: 0,
       neighbor: 0,
+      guest: 0,
     },
   };
 
@@ -87,6 +89,7 @@ export function getCategoryLabel(category: string): string {
     friend: "Sahabat",
     colleague: "Teman Kerja",
     neighbor: "Tetangga",
+    guest: "Tamu Undangan",
   };
   return labels[category] || category;
 }
@@ -104,6 +107,7 @@ export function getCategoryColor(
     friend: "amber",
     colleague: "purple",
     neighbor: "slate",
+    guest: "slate",
   };
   return colors[category] || "slate";
 }

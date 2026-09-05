@@ -7,31 +7,24 @@
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  */
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { BarChart3, Users, Link as LinkIcon, ArrowRight } from "lucide-react";
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-cream to-rose-50">
+    <div className="min-h-screen bg-linear-to-br from-amber-50 via-cream to-rose-50">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-slate-900">Wedding Portal</h2>
           <div className="flex gap-4">
-            <a
+            <Link
               href="/"
               className="px-4 py-2 text-slate-700 hover:text-slate-900 transition font-medium"
             >
               Home
-            </a>
+            </Link>
             <Link
               href="/admin"
               className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition font-medium flex items-center gap-2"
@@ -44,8 +37,7 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      {mounted && (
-        <motion.div
+      <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -58,8 +50,7 @@ export default function HomePage() {
             Sistem manajemen tamu undangan dengan link unik untuk setiap tamu.
             Kelola, bagikan, dan pantau RSVP dengan mudah.
           </p>
-        </motion.div>
-      )}
+      </motion.div>
 
       {/* Features Grid */}
       <div className="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
@@ -105,7 +96,7 @@ export default function HomePage() {
           <span className="text-sm font-semibold text-slate-700">Akses Dashboard →</span>
         </Link>
 
-        <div className="group bg-gradient-to-br from-rose-50 to-amber-50 rounded-2xl p-8 border border-rose-200">
+        <div className="group bg-linear-to-br from-rose-50 to-amber-50 rounded-2xl p-8 border border-rose-200">
           <div className="flex items-start justify-between mb-4">
             <LinkIcon className="text-rose-600" size={32} />
           </div>
@@ -132,7 +123,7 @@ export default function HomePage() {
             </span>
             <div>
               <h4 className="font-semibold text-slate-900">Akses Admin Dashboard</h4>
-              <p className="text-slate-600 text-sm">Klik tombol "Admin" di atas untuk membuka dashboard</p>
+              <p className="text-slate-600 text-sm">Klik tombol &quot;Admin&quot; di atas untuk membuka dashboard</p>
             </div>
           </li>
           <li className="flex gap-4">
@@ -153,7 +144,7 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold text-slate-900">Copy & Bagikan Link</h4>
               <p className="text-slate-600 text-sm">
-                Gunakan tombol "Copy" untuk copy link, atau "Share" untuk kirim via WhatsApp
+                Gunakan tombol &quot;Copy&quot; untuk copy link, atau &quot;Share&quot; untuk kirim via WhatsApp
               </p>
             </div>
           </li>

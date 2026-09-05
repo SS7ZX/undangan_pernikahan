@@ -9,7 +9,9 @@ import path from "path";
 import { calculateGuestStats } from "@/lib/guests";
 import type { Guest } from "@/lib/types";
 
-const guestsFilePath = path.join(process.cwd(), "public", "guests.json");
+// The imported workbook data is kept outside public so guest data is only
+// exposed through the API and not as a directly browsable JSON asset.
+const guestsFilePath = path.join(process.cwd(), "_generated-guests.json");
 
 async function readGuestsFromFile(): Promise<Guest[]> {
   const file = await fs.readFile(guestsFilePath, "utf8");
@@ -27,7 +29,7 @@ export async function GET() {
       stats,
       count: guests.length,
     });
-  } catch (error) {
+  } catch {
     return Response.json(
       {
         success: false,
