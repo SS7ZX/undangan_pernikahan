@@ -16,22 +16,35 @@ import type { Guest } from "./types";
  * Generate WhatsApp message template
  */
 export function generateWhatsAppMessage(guestName: string, guestLink: string): string {
-  return `Assalamu'alaikum ${guestName} 👋
+  const cleanGuestName = guestName.trim() || "Bapak/Ibu/Saudara/i";
 
-Dengan penuh kebahagiaan, kami mengundang Anda untuk hadir dan memberikan doa restu pada pernikahan kami:
+  return `Assalamu'alaikum warahmatullahi wabarakatuh,
 
-✨ *Rian Pebriansyah* 💍 *Windi Nuraeni* ✨
+Yth. Bapak/Ibu/Saudara/i *${cleanGuestName}*,
 
-📅 Sabtu, 07 November 2026
-🕐 Pukul 08.00 WIB
-📍 Rumah Mempelai Wanita
+Dengan memohon rahmat dan ridha Allah SWT, serta penuh kebahagiaan dan rasa syukur, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara pernikahan kami dan memberikan doa restu bagi:
 
-Buka undangan digital personal Anda:
-${guestLink}
+💍 *Rian Pebriansyah, S.Psi.*
+🤍 *Windi Nuraeni*
 
-Mohon kesediaannya untuk membuka undangan dan melakukan konfirmasi kehadiran melalui link di atas.
+InsyaAllah acara akan dilaksanakan pada:
 
-Terima kasih atas perhatian dan doa restunya. 🙏💕`;
+📅 *Hari, tanggal:* Sabtu, 07 November 2026
+🕐 *Waktu:* Pukul 08.00 WIB
+📍 *Tempat:* Rumah Mempelai Wanita
+
+Untuk melihat undangan digital personal, detail acara, lokasi, serta melakukan konfirmasi kehadiran, silakan buka link berikut:
+
+🔗 ${guestLink}
+
+Mohon kesediaan Bapak/Ibu/Saudara/i untuk membuka undangan tersebut dan mengisi konfirmasi kehadiran melalui halaman yang tersedia. Kehadiran dan doa restu Bapak/Ibu/Saudara/i merupakan kebahagiaan yang sangat berarti bagi kami.
+
+Atas perhatian, doa, dan kesediaannya untuk hadir, kami ucapkan terima kasih.
+
+Wassalamu'alaikum warahmatullahi wabarakatuh.
+
+Salam hormat dan bahagia,
+*Rian & Windi* 🙏🤍`;
 }
 
 /**
