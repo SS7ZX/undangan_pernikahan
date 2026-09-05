@@ -265,7 +265,11 @@ RSVPLink.displayName = "RSVPLink";
 // ─────────────────────────────────────────────────────────────────────────────
 // ④ MAIN PAGE
 // ─────────────────────────────────────────────────────────────────────────────
-export default function WeddingInvitation() {
+export default function WeddingInvitation({
+  personalizedGuestName = "",
+}: {
+  personalizedGuestName?: string;
+}) {
   const prefersReducedMotion = useReducedMotion();
 
   // ── PHASE STATE ──────────────────────────────────────────────────────────
@@ -281,7 +285,7 @@ export default function WeddingInvitation() {
   const [msg,       setMsg]       = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isMobile,  setIsMobile]  = useState(false);
-  const [guestName, setGuestName] = useState("Tamu Undangan");
+  const [guestName, setGuestName] = useState(() => personalizedGuestName.trim() || "Tamu Undangan");
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
   const heroRef    = useRef<HTMLElement>(null);
@@ -311,6 +315,8 @@ export default function WeddingInvitation() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
+    if (personalizedGuestName.trim()) return;
+
     const params = new URLSearchParams(window.location.search);
     const rawGuestName =
       params.get("to") ??
@@ -326,7 +332,7 @@ export default function WeddingInvitation() {
       setGuestName(cleanedGuestName || "Tamu Undangan");
     }, 0);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [personalizedGuestName]);
 
   // ── AUDIO: preload silently on mount, play on splash tap ─────────────────
   useEffect(() => {
@@ -1118,10 +1124,6 @@ export default function WeddingInvitation() {
               variants={vStagger}
               className="flex flex-col items-center"
             >
-              <motion.p variants={vUp} className="font-sans text-[9px] tracking-[0.38em] uppercase mb-4" style={{ color: "#ABABA0" }}>
-                Kepada Yth. {guestName}
-              </motion.p>
-
               <motion.p variants={vUp} className="font-sans text-[9px] tracking-[0.5em] uppercase mb-10" style={{ color: "#ABABA0" }}>
                 Bersama keluarga, mengundang kehadiran Anda
               </motion.p>
@@ -1169,6 +1171,23 @@ export default function WeddingInvitation() {
               </motion.h1>
 
               <motion.div variants={vIn} className="mt-10 mb-8 flex justify-center"><Gem /></motion.div>
+
+              <motion.div
+                variants={vUp}
+                className="flex flex-col items-center gap-2 mb-8 px-6 py-4 rounded-2xl"
+                style={{
+                  border: "1px solid rgba(168,186,120,0.45)",
+                  background: "rgba(242,245,232,0.68)",
+                  boxShadow: "0 8px 24px rgba(138,154,91,0.08)",
+                }}
+              >
+                <span className="font-sans text-[8px] tracking-[0.42em] uppercase" style={{ color: "#9A9A90" }}>
+                  Undangan khusus untuk
+                </span>
+                <span className="font-serif text-2xl md:text-3xl" style={{ color: "var(--ink)" }}>
+                  {guestName}
+                </span>
+              </motion.div>
 
               <motion.p variants={vUp} className="font-sans text-[9px] tracking-[0.42em] uppercase" style={{ color: "#B0AEA6" }}>
                 Meminta kehadiran Anda dengan penuh kehormatan
