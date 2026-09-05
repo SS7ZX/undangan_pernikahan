@@ -59,5 +59,11 @@ export default function GuestInvitationPage() {
     );
   }
 
-  return <WeddingInvitation personalizedGuestName={guest.name} />;
+  return (
+    <WeddingInvitation
+      personalizedGuestName={guest.name}
+      guestSlug={guest.slug}
+      initialAttendance={guest.attendance}
+    />
+  );
 }

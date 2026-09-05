@@ -46,8 +46,7 @@ app/
 │   ├── [slug]/
 │   │   └── page.tsx      # Guest invitation page
 │   └── layout.tsx
-├── home/
-│   └── page.tsx          # Home page (informasi)
+├── page.tsx              # Main invitation component shared by every guest
 ├── globals.css
 └── layout.tsx
 
@@ -188,7 +187,7 @@ interface Guest {
 - [ ] Seating arrangement
 - [ ] Gift registry
 - [ ] Photo gallery
-- [ ] Guest counter di tamu list
+- [x] RSVP personal tersimpan berdasarkan slug tamu
 
 ## 🐛 Troubleshooting
 

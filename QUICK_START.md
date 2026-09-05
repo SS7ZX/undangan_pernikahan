@@ -18,8 +18,8 @@ Klik tombol **Admin** di navbar, atau buka langsung:
 http://localhost:3000/admin
 ```
 
-### Step 3: View Sample Guests
-Anda sudah punya 6 sample tamu di `public/guests.json`. Lihat semuanya di admin dashboard.
+### Step 3: View Guest List
+Daftar tamu berada di `_generated-guests.json`. Lihat semuanya di admin dashboard.
 
 ### Step 4: Copy & Share Links
 1. Di admin panel, klik **Copy** untuk copy link tamu
@@ -49,7 +49,7 @@ Edit `public/guests.json` untuk tambah/ubah tamu:
 ├── 📁 app/
 │   ├── admin/          ← Admin dashboard
 │   ├── guest/          ← Guest invitation pages
-│   ├── home/           ← Home/info page
+│   ├── page.tsx        ← Undangan utama untuk semua tamu
 │   └── api/            ← API routes
 ├── 📁 lib/
 │   ├── types.ts        ← TypeScript types
@@ -64,15 +64,15 @@ Edit `public/guests.json` untuk tambah/ubah tamu:
 
 | Route | Deskripsi |
 |-------|----------|
-| `/` | Home page |
+| `/` | Undangan utama |
 | `/admin` | Admin dashboard (manage tamu + link) |
 | `/guest/[slug]` | Individual invitation page |
 | `/api/guests` | Get all guests (JSON) |
-| `/api/guests/[slug]` | Get single guest (JSON) |
+| `/api/guests/[slug]` | Get guest / save RSVP personal (JSON) |
 
 ## 📝 Editing Guest Data
 
-### Format `public/guests.json`:
+### Format `_generated-guests.json`:
 ```json
 [
   {

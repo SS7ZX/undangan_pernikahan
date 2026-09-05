@@ -233,14 +233,16 @@ const SendButton = memo(() => {
 });
 SendButton.displayName = "SendButton";
 
-const RSVPLink = memo(({ href, variant, children }: {
+const RSVPLink = memo(({ href, variant, children, onClick }: {
   href: string; variant: "primary" | "secondary"; children: React.ReactNode;
+  onClick?: () => void;
 }) => {
   const [hov, setHov] = useState(false);
   const isPrimary = variant === "primary";
   return (
     <a
       href={href} target="_blank" rel="noreferrer"
+      onClick={onClick}
       className={[
         "flex items-center justify-center gap-2 rounded-2xl py-4 font-sans text-[10px] tracking-[0.28em] uppercase transition-all duration-300",
         isPrimary ? "attend-pulse flex-1" : "flex-shrink-0 border px-5",
@@ -267,8 +269,12 @@ RSVPLink.displayName = "RSVPLink";
 // ─────────────────────────────────────────────────────────────────────────────
 export default function WeddingInvitation({
   personalizedGuestName = "",
+  guestSlug = "",
+  initialAttendance = null,
 }: {
   personalizedGuestName?: string;
+  guestSlug?: string;
+  initialAttendance?: "yes" | "no" | "maybe" | null;
 }) {
   const prefersReducedMotion = useReducedMotion();
 
@@ -286,6 +292,7 @@ export default function WeddingInvitation({
   const [submitted, setSubmitted] = useState(false);
   const [isMobile,  setIsMobile]  = useState(false);
   const [guestName, setGuestName] = useState(() => personalizedGuestName.trim() || "Tamu Undangan");
+  const [attendance, setAttendance] = useState<"yes" | "no" | "maybe" | null>(initialAttendance);
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
   const heroRef    = useRef<HTMLElement>(null);
@@ -413,6 +420,18 @@ export default function WeddingInvitation({
     setName(""); setMsg("");
     setTimeout(() => setSubmitted(false), 4500);
   }, [name, msg]);
+
+  const saveAttendance = useCallback((nextAttendance: "yes" | "no") => {
+    setAttendance(nextAttendance);
+    if (!guestSlug) return;
+    void fetch(`/api/guests/${encodeURIComponent(guestSlug)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ attendance: nextAttendance }),
+    }).catch(() => {
+      // WhatsApp remains available even when a static JSON deployment cannot write.
+    });
+  }, [guestSlug]);
 
   const hover = { onMouseEnter: () => setHoverBtn(true), onMouseLeave: () => setHoverBtn(false) };
 
@@ -1628,15 +1647,21 @@ export default function WeddingInvitation({
               boxShadow: "0 -10px 40px rgba(30,34,25,0.07)",
             }}
           >
+            {guestSlug && attendance && (
+              <p className="pb-2 text-center font-sans text-[9px] tracking-[0.18em] uppercase" style={{ color: "var(--sage)" }}>
+                {attendance === "yes" ? "Kehadiran Anda sudah tercatat" : "Ketidakhadiran Anda sudah tercatat"}
+              </p>
+            )}
             <div
               className="max-w-md mx-auto flex gap-3 px-4 pt-3"
               style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
             >
               <RSVPLink
                 href={`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(
-                  `✨ *Konfirmasi Kehadiran*\n\nAssalamualaikum,\n\nSaya menyatakan *hadir* di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\n📅 ${C.date}\n🕌 ${C.venue}\n\nSalam hangat,`
+                  `✨ *Konfirmasi Kehadiran*\n\nAssalamualaikum,\n\nSaya, *${guestName}*, menyatakan *hadir* di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\n📅 ${C.date}\n🕌 ${C.venue}\n\nSalam hangat,`
                 )}`}
                 variant="primary"
+                onClick={() => saveAttendance("yes")}
               >
                 <Heart size={12} fill="currentColor" strokeWidth={0} />
                 Konfirmasi Hadir
@@ -1644,9 +1669,10 @@ export default function WeddingInvitation({
 
               <RSVPLink
                 href={`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(
-                  `Assalamualaikum,\n\nMohon maaf, saya tidak dapat hadir di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\nSemoga acara berjalan lancar dan penuh berkah. 🤲`
+                  `Assalamualaikum,\n\nSaya, *${guestName}*, mohon maaf tidak dapat hadir di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\nSemoga acara berjalan lancar dan penuh berkah. 🤲`
                 )}`}
                 variant="secondary"
+                onClick={() => saveAttendance("no")}
               >
                 Tidak Hadir
               </RSVPLink>
