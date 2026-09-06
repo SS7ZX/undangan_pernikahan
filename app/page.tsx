@@ -1076,7 +1076,7 @@ export default function WeddingInvitation({
             </span>
             <div className="leading-none">
               <p className="font-serif text-lg" style={{ color: "var(--ink)" }}>
-                Si {C.groom} &amp; {C.bride}
+                {C.groom} &amp; {C.bride}
               </p>
               <p className="mt-1 font-sans text-[7px] tracking-[0.28em] uppercase" style={{ color: "var(--muted)" }}>
                 Undangan Pernikahan
