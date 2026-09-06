@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Romeo & Juliet | Wedding Invitation",
-  description: "You are joyfully invited to our wedding celebration.",
+  title: "Si Rian & Windi | Undangan Pernikahan",
+  description: "Undangan pernikahan Si Rian & Windi.",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="id" className="scroll-smooth">
       <body className={`${cormorant.variable} ${inter.variable} font-serif bg-[#FAF9F6]`}>
         {children}
       </body>

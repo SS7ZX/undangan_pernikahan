@@ -1049,6 +1049,42 @@ export default function WeddingInvitation({
           )}
         </AnimatePresence>
 
+        {/* ── TOP BRAND NAVBAR ─────────────────────────────────────────────── */}
+        <motion.header
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: phase === "splash" ? 0 : 1, y: phase === "splash" ? -12 : 0 }}
+          transition={{ delay: 3.2, duration: 0.7, ease }}
+          className="fixed top-4 left-4 z-[600]"
+          aria-label="Navigasi utama"
+        >
+          <div
+            className="flex items-center gap-3 rounded-full px-3.5 py-2 border"
+            style={{
+              background: "rgba(250,248,243,0.82)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderColor: "rgba(255,255,255,0.9)",
+              boxShadow: "0 2px 20px rgba(30,34,25,0.08)",
+            }}
+          >
+            <span
+              className="flex h-7 w-7 items-center justify-center rounded-full font-serif text-xs"
+              style={{ background: "var(--sage-p)", color: "var(--sage)" }}
+              aria-hidden="true"
+            >
+              {C.groom[0]}&amp;{C.bride[0]}
+            </span>
+            <div className="leading-none">
+              <p className="font-serif text-lg" style={{ color: "var(--ink)" }}>
+                Si {C.groom} &amp; {C.bride}
+              </p>
+              <p className="mt-1 font-sans text-[7px] tracking-[0.28em] uppercase" style={{ color: "var(--muted)" }}>
+                Undangan Pernikahan
+              </p>
+            </div>
+          </div>
+        </motion.header>
+
         {/* ── MUSIC BUTTON ─────────────────────────────────────────────────── */}
         <motion.button
           initial={{ opacity: 0, scale: 0.8 }}
