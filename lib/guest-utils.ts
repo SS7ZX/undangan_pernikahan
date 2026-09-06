@@ -34,7 +34,7 @@ Windi Nuraeni
 Yang insyaAllah akan dilaksanakan pada:
 
 Hari, tanggal: Sabtu, 07 November 2026
-Waktu: Pukul 08.00 WIB
+Waktu: Akad 09.00 WIB, resepsi 10.00 WIB sampai selesai
 Tempat: Rumah Mempelai Wanita
 
 Berikut link undangan kami. Untuk mengetahui informasi lengkap mengenai acara, lokasi, serta melakukan konfirmasi kehadiran, silakan kunjungi:
@@ -92,7 +92,7 @@ export function generateEmailTemplate(guestName: string, guestLink: string): {
       </div>
       
       <p><strong>📅 Hari & Tanggal:</strong> Sabtu, 07 November 2026</p>
-      <p><strong>🕐 Waktu:</strong> Pukul 08.00 WIB</p>
+      <p><strong>🕐 Waktu:</strong> Akad 09.00 WIB, resepsi 10.00 WIB sampai selesai</p>
       <p><strong>📍 Lokasi:</strong> Rumah Mempelai Wanita</p>
       
       <p style="text-align: center;">

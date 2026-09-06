@@ -9,7 +9,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Copy, Check, Share2, Download, Search,
+  Copy, Check, MessageCircle, Download, Search,
   Users, BarChart3, MessageSquare, ArrowUpRight, Plus, X,
 } from "lucide-react";
 import type { Guest, GuestStats } from "@/lib/types";
@@ -78,10 +78,12 @@ export default function AdminDashboard() {
   };
 
   // Filter & search
+  const normalizedPhoneQuery = searchQuery.replace(/\D/g, "");
   const filteredGuests = sortGuestsByName(filterGuestsByCategory(guests, selectedCategory))
     .filter((g) =>
       g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      g.relation.toLowerCase().includes(searchQuery.toLowerCase())
+      g.relation.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (normalizedPhoneQuery.length > 0 && g.phone.includes(normalizedPhoneQuery))
     );
 
   // Copy link to clipboard
@@ -241,6 +243,9 @@ export default function AdminDashboard() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
               />
+              <p className="text-xs text-slate-500 mt-2">
+                {filteredGuests.length} tamu ditemukan. Cari berdasarkan nama, hubungan, atau nomor WhatsApp.
+              </p>
             </div>
 
             {/* Category Filter */}
@@ -322,10 +327,11 @@ export default function AdminDashboard() {
                             onClick={() =>
                               handleSendWhatsApp(guest.name, guest.slug, guest.phone)
                             }
-                            className="p-2 hover:bg-slate-100 rounded-lg transition"
-                            title="Send WhatsApp"
+                            className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-xs font-medium whitespace-nowrap"
+                            title={`Kirim undangan ke ${guest.name} lewat WhatsApp`}
                           >
-                            <Share2 size={18} className="text-slate-600" />
+                            <MessageCircle size={16} />
+                            <span className="hidden sm:inline">Kirim WA</span>
                           </button>
                         </div>
                       </td>
