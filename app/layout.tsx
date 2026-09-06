@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Si Rian & Windi | Undangan Pernikahan",
-  description: "Undangan pernikahan Si Rian & Windi.",
+  title: "Rian & Windi | Undangan Pernikahan",
+  description: "Undangan pernikahan Rian & Windi.",
 };
 
 export default function RootLayout({
