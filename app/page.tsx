@@ -57,7 +57,6 @@ const C = {
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
   photo3:        "/photo3.jpeg",
-  qrisImg:       "/qris.png",
   quote:         "Dua jiwa yang menemukan rumah satu sama lain — kami bersyukur kau hadir menyaksikan awal perjalanan kami.",
   quoteEn:       "Two souls that found home in each other.",
 } as const;
@@ -1482,23 +1481,6 @@ export default function WeddingInvitation({
               <p className="font-sans text-sm text-center leading-relaxed mb-10" style={{ color: "var(--muted)", maxWidth: "32ch", margin: "0 auto 2.5rem" }}>
                 Kehadiran Anda adalah hadiah yang paling berarti. Namun jika Anda ingin memberikan restu, Anda dapat melakukannya di sini.
               </p>
-
-              {/* QRIS */}
-              <div
-                className="relative rounded-3xl overflow-hidden mb-8"
-                style={{
-                  width: "clamp(190px, 58vw, 236px)",
-                  height: "clamp(190px, 58vw, 236px)",
-                  background: "white",
-                  border: "1px solid var(--border)",
-                  boxShadow: "0 8px 40px rgba(30,34,25,0.08)",
-                }}
-              >
-                <Image
-                  src={C.qrisImg} alt="QRIS Payment"
-                  fill style={{ objectFit: "contain", padding: "8px" }}
-                />
-              </div>
 
               {/* Bank accounts */}
               <div className="w-full flex flex-col gap-3 mb-4">
