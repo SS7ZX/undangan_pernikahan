@@ -18,33 +18,37 @@ import type { Guest } from "./types";
 export function generateWhatsAppMessage(guestName: string, guestLink: string): string {
   const cleanGuestName = guestName.trim() || "Bapak/Ibu/Saudara/i";
 
-  return `Assalamu'alaikum warahmatullahi wabarakatuh,
+  return `Kepada Yth.
+Bapak/Ibu/Saudara/i
 
-Yth. Bapak/Ibu/Saudara/i *${cleanGuestName}*,
+${cleanGuestName}
 
-Dengan memohon rahmat dan ridha Allah SWT, serta penuh kebahagiaan dan rasa syukur, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara pernikahan kami dan memberikan doa restu bagi:
+Assalamu'alaikum Warahmatullahi Wabarakatuh
 
-💍 *Rian Pebriansyah, S.Psi.*
-🤍 *Windi Nuraeni*
+Dengan memohon rahmat dan ridha Allah SWT, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
 
-InsyaAllah acara akan dilaksanakan pada:
+Rian Pebriansyah, S.Psi.
+dengan
+Windi Nuraeni
 
-📅 *Hari, tanggal:* Sabtu, 07 November 2026
-🕐 *Waktu:* Pukul 08.00 WIB
-📍 *Tempat:* Rumah Mempelai Wanita
+Yang insyaAllah akan dilaksanakan pada:
 
-Untuk melihat undangan digital personal, detail acara, lokasi, serta melakukan konfirmasi kehadiran, silakan buka link berikut:
+Hari, tanggal: Sabtu, 07 November 2026
+Waktu: Pukul 08.00 WIB
+Tempat: Rumah Mempelai Wanita
 
-🔗 ${guestLink}
+Berikut link undangan kami. Untuk mengetahui informasi lengkap mengenai acara, lokasi, serta melakukan konfirmasi kehadiran, silakan kunjungi:
 
-Mohon kesediaan Bapak/Ibu/Saudara/i untuk membuka undangan tersebut dan mengisi konfirmasi kehadiran melalui halaman yang tersedia. Kehadiran dan doa restu Bapak/Ibu/Saudara/i merupakan kebahagiaan yang sangat berarti bagi kami.
+${guestLink}
 
-Atas perhatian, doa, dan kesediaannya untuk hadir, kami ucapkan terima kasih.
+Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.
 
-Wassalamu'alaikum warahmatullahi wabarakatuh.
+Atas kehadiran dan doa restunya, kami ucapkan terima kasih.
 
-Salam hormat dan bahagia,
-*Rian & Windi* 🙏🤍`;
+Wassalamu'alaikum Warahmatullahi Wabarakatuh
+
+Hormat kami,
+Rian & Windi`;
 }
 
 /**
