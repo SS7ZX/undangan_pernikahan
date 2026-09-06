@@ -139,23 +139,23 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-slate-50 to-slate-100">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900">Guest Management</h1>
-              <p className="text-slate-600 mt-1">Manage invitations & track RSVPs</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Guest Management</h1>
+              <p className="text-sm sm:text-base text-slate-600 mt-1">Manage invitations & track RSVPs</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex w-full sm:w-auto items-center gap-2 sm:gap-3">
               <button
                 onClick={() => setShowAddForm((isOpen) => !isOpen)}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+                className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-sm"
               >
                 {showAddForm ? <X size={18} /> : <Plus size={18} />}
                 {showAddForm ? "Tutup" : "Tambah Tamu"}
               </button>
               <button
                 onClick={handleExportCSV}
-                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition"
+                className="flex flex-1 sm:flex-none items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm"
               >
                 <Download size={18} />
                 Export CSV
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
 
         {/* Stats Grid */}
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
             <StatCard
               icon={Users}
               label="Total Tamu"
@@ -268,7 +268,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Guests Table */}
-        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+        <div className="hidden md:block bg-white rounded-lg border border-slate-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-50 border-b border-slate-200">
@@ -343,6 +343,53 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {/* Guests Cards — mobile */}
+        <div className="md:hidden space-y-3">
+          {filteredGuests.map((guest) => (
+            <motion.article
+              key={guest.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="font-semibold text-slate-900 truncate">{guest.name}</h3>
+                  <p className="text-sm text-slate-500 mt-1 truncate">{guest.relation}</p>
+                </div>
+                <StatusBadge status={guest.attendance} />
+              </div>
+              <div className="flex items-center justify-between gap-3 mt-4">
+                <span
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-medium bg-${getCategoryColor(
+                    guest.category
+                  )}-100 text-${getCategoryColor(guest.category)}-700`}
+                >
+                  {getCategoryLabel(guest.category)}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleCopyLink(guest.slug, guest.name, guest.id)}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-xs font-medium"
+                    title="Copy link"
+                  >
+                    {copiedId === guest.id ? <Check size={15} className="text-emerald-600" /> : <Copy size={15} />}
+                    Salin
+                  </button>
+                  <button
+                    onClick={() => handleSendWhatsApp(guest.name, guest.slug, guest.phone)}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition text-xs font-medium"
+                    title={`Kirim undangan ke ${guest.name} lewat WhatsApp`}
+                  >
+                    <MessageCircle size={15} />
+                    WhatsApp
+                  </button>
+                </div>
+              </div>
+            </motion.article>
+          ))}
+        </div>
+
         {filteredGuests.length === 0 && (
           <div className="text-center py-12 bg-white rounded-lg border border-slate-200">
             <Users size={48} className="mx-auto text-slate-400 mb-4" />
@@ -378,14 +425,14 @@ function StatCard({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`bg-linear-to-br ${colorClasses[color]} border p-6 rounded-lg`}
+      className={`bg-linear-to-br ${colorClasses[color]} border p-3 sm:p-6 rounded-lg`}
     >
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-slate-600 mb-2">{label}</p>
-          <p className="text-3xl font-bold text-slate-900">{value}</p>
+          <p className="text-xs sm:text-sm text-slate-600 mb-1 sm:mb-2">{label}</p>
+          <p className="text-2xl sm:text-3xl font-bold text-slate-900">{value}</p>
         </div>
-        <div className={`p-3 bg-${color}-200 rounded-lg opacity-60`}>
+        <div className={`hidden sm:block p-3 bg-${color}-200 rounded-lg opacity-60`}>
           <Icon size={24} />
         </div>
       </div>
