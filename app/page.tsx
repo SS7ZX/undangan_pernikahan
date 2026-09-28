@@ -1365,7 +1365,7 @@ export default function WeddingInvitation({
 
         {/* ════════════════════════════════════════════════════════════════════
             §3  DARK SAVE-THE-DATE
-        ════════════════════════════════════════════════════════════════════ */}
+        ═══════════════════════════════════════════════════════════════ */}
         <section
           className="relative mx-4 md:mx-6 my-16 rounded-[2.5rem] overflow-hidden"
           style={{ background: "var(--charcoal)" }}
