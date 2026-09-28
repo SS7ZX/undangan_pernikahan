@@ -57,8 +57,6 @@ const C = {
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
   photo3:        "/photo3.jpeg",
-  quote:         "Dua jiwa yang menemukan rumah satu sama lain — kami bersyukur kau hadir menyaksikan awal perjalanan kami.",
-  quoteEn:       "Two souls that found home in each other.",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -291,6 +289,7 @@ export default function WeddingInvitation({
   const [msg,       setMsg]       = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isMobile,  setIsMobile]  = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const [guestName, setGuestName] = useState(() => personalizedGuestName.trim() || "Tamu Undangan");
   const [attendance, setAttendance] = useState<"yes" | "no" | "maybe" | null>(initialAttendance);
 
@@ -307,16 +306,21 @@ export default function WeddingInvitation({
   // Parallax
   const { scrollYProgress: heroSY }    = useScroll({ target: heroRef,    offset: ["start start", "end start"] });
   const { scrollYProgress: gallerySY } = useScroll({ target: galleryRef, offset: ["start end",   "end start"] });
-  const heroTY  = useParallax(heroSY,    isMobile || prefersReducedMotion ? ["0%","0%"] : ["0%","18%"]);
-  const p1Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["-8%","8%"]);
-  const p2Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["8%","-8%"]);
-  const p3Y     = useParallax(gallerySY, isMobile || prefersReducedMotion ? ["0%","0%"] : ["-5%","5%"]);
+  const disableParallax = hasMounted && (isMobile || prefersReducedMotion);
+  const heroTY  = useParallax(heroSY,    disableParallax ? ["0%","0%"] : ["0%","18%"]);
+  const p1Y     = useParallax(gallerySY, disableParallax ? ["0%","0%"] : ["-8%","8%"]);
+  const p2Y     = useParallax(gallerySY, disableParallax ? ["0%","0%"] : ["8%","-8%"]);
+  const p3Y     = useParallax(gallerySY, disableParallax ? ["0%","0%"] : ["-5%","5%"]);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
+    const mountFrame = window.requestAnimationFrame(() => setHasMounted(true));
     window.addEventListener("resize", check, { passive: true });
-    return () => window.removeEventListener("resize", check);
+    return () => {
+      window.cancelAnimationFrame(mountFrame);
+      window.removeEventListener("resize", check);
+    };
   }, []);
 
   useEffect(() => {
@@ -1263,51 +1267,32 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §2  QUOTE
-        ════════════════════════════════════════════════════════════════════ */}
-        <section className="py-24 px-6" style={{ background: "var(--cream)" }}>
-          <motion.div
-            initial="hidden" whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            variants={vFast}
-            className="max-w-lg mx-auto flex flex-col items-center gap-6 text-center"
-          >
-            <motion.div variants={vIn} className="font-serif leading-none select-none" style={{
-              fontSize: "7rem", lineHeight: 0.75, color: "var(--sage-l)", marginBottom: "-1.2rem",
-            }}>
-              &quot;
-            </motion.div>
-            <motion.p variants={vUp} className="font-serif font-light italic leading-[1.85] text-xl md:text-2xl" style={{ color: "#5A5850" }}>
-              {C.quote}
-            </motion.p>
-            <motion.p variants={vUp} className="font-sans text-[10px] tracking-[0.32em] uppercase" style={{ color: "var(--sage)" }}>
-              {C.quoteEn}
-            </motion.p>
-            <motion.div variants={vIn}><Gem /></motion.div>
-            <motion.div variants={vUp} className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6">
-              <p className="font-serif text-lg md:text-xl font-light">{C.groomFull}</p>
-              <span className="font-serif italic text-3xl" style={{ color: "var(--sage-l)" }}>&</span>
-              <p className="font-serif text-lg md:text-xl font-light">{C.brideFull}</p>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* ════════════════════════════════════════════════════════════════════
-            §3  GALLERY
+            §2  GALLERY
         ════════════════════════════════════════════════════════════════════ */}
         <section ref={galleryRef} className="py-16 px-4 overflow-hidden" style={{ background: "var(--cream)" }}>
           <div className="max-w-2xl mx-auto">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-5 items-center md:items-end justify-center">
-              <motion.div style={{ y: p1Y }} className="-mt-3 w-full md:mt-0 md:w-[52%] flex-shrink-0">
+            <div className="mb-10">
+              <p className="font-sans text-[9px] tracking-[0.5em] uppercase mb-3" style={{ color: "var(--sage)" }}>
+                Kisah Kami · 01
+              </p>
+              <h2 className="font-serif font-light text-[clamp(1.75rem,6vw,2.5rem)] mb-4" style={{ color: "var(--ink)" }}>
+                Awal Pertemuan dan Menjalin Hubungan
+              </h2>
+              <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
+                Semua bermula dari pertemuan yang begitu kebetulan—momen yang tak pernah saya bayangkan sebelumnya. Saat itu, kami menjalani hubungan tanpa status. Namun, waktu, komunikasi, dan setiap pertemuan perlahan membuat kami semakin dekat. Kami terus bertukar kabar; tanpa disadari, perjalanan ini telah membawa kami sejauh ini. Berbagai rintangan pun kami lewati bersama, hingga akhirnya saya mantap memilihnya sebagai pasangan hidup, calon istri, dan teman hidup saya.
+              </p>
+            </div>
+            <div className="grid grid-cols-[1.08fr_0.92fr] items-center md:items-end gap-3 md:gap-5">
+              <motion.div style={{ y: p1Y }} className="-mt-3 min-w-0 md:mt-0">
                 <motion.div
                   initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 1.1, ease }}
-                  className="relative w-full rounded-3xl overflow-hidden shimmer"
-                  style={{ height: "clamp(360px, 82vw, 600px)", boxShadow: "0 24px 72px rgba(30,34,25,0.14)" }}
+                  className="relative w-full h-[clamp(180px,58vw,340px)] md:h-[clamp(360px,48vw,600px)] rounded-3xl overflow-hidden shimmer"
+                  style={{ boxShadow: "0 24px 72px rgba(30,34,25,0.14)" }}
                 >
                   <Image
                     src={C.photo1} alt={`${C.groomFull} & ${C.brideFull}`}
-                    fill sizes="(max-width:768px) 100vw, 52vw"
+                    fill sizes="(max-width: 768px) 55vw, 52vw"
                     style={{ objectFit: "cover", objectPosition: "center top" }}
                     priority
                   />
@@ -1322,20 +1307,19 @@ export default function WeddingInvitation({
                 </motion.div>
               </motion.div>
 
-              <motion.div style={{ y: p2Y }} className="w-full md:w-[44%] flex-shrink-0 md:mt-24">
+              <motion.div style={{ y: p2Y }} className="min-w-0 md:mt-24">
                 <motion.div
                   initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ duration: 1.1, delay: 0.15, ease }}
-                  className="relative w-full rounded-3xl overflow-hidden"
+                  className="relative w-full h-[clamp(180px,58vw,340px)] md:h-[clamp(360px,48vw,540px)] rounded-3xl overflow-hidden"
                   style={{
-                    height: "clamp(360px, 78vw, 540px)",
                     background: "#EDF1E4",
                     boxShadow: "0 24px 72px rgba(30,34,25,0.10)",
                   }}
                 >
                   <Image
                     src={C.photo2} alt={`${C.groomFull} & ${C.brideFull}`}
-                    fill sizes="(max-width:768px) 100vw, 44vw"
+                    fill sizes="(max-width: 768px) 45vw, 44vw"
                     style={{ objectFit: "contain", objectPosition: "center center" }}
                   />
                   <div className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none" style={{
@@ -1349,9 +1333,8 @@ export default function WeddingInvitation({
               <motion.div
                 initial={{ opacity: 0, y: 44 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ duration: 1.1, delay: 0.3, ease }}
-                className="relative w-full rounded-3xl overflow-hidden"
+                className="relative w-full h-[clamp(260px,90vw,540px)] md:h-[clamp(360px,42vw,540px)] rounded-3xl overflow-hidden"
                 style={{
-                  height: "clamp(360px, 78vw, 540px)",
                   background: "#EDF1E4",
                   boxShadow: "0 24px 72px rgba(30,34,25,0.10)",
                 }}
@@ -1365,12 +1348,23 @@ export default function WeddingInvitation({
                   background: "linear-gradient(to top, rgba(30,34,25,0.08), transparent)",
                 }} />
               </motion.div>
+              <div className="mt-8 border-t pt-8" style={{ borderColor: "var(--border)" }}>
+                <p className="font-sans text-[9px] tracking-[0.5em] uppercase mb-3" style={{ color: "var(--sage)" }}>
+                  Kisah Kami · 02
+                </p>
+                <h2 className="font-serif font-light text-[clamp(1.75rem,6vw,2.5rem)] mb-4" style={{ color: "var(--ink)" }}>
+                  Lamaran
+                </h2>
+                <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
+                  Dari pertemuan tak terduga pada 2022, tumbuh keyakinan bahwa kami dapat menjadi tempat pulang bagi satu sama lain. Dengan restu orang tua dan cinta yang terus bertumbuh, kami memantapkan langkah menuju masa depan bersama melalui lamaran pada 07 September 2025.
+                </p>
+              </div>
             </motion.div>
           </div>
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §4  DARK SAVE-THE-DATE
+            §3  DARK SAVE-THE-DATE
         ════════════════════════════════════════════════════════════════════ */}
         <section
           className="relative mx-4 md:mx-6 my-16 rounded-[2.5rem] overflow-hidden"
@@ -1411,7 +1405,7 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §5  EVENT DETAILS
+            §4  EVENT DETAILS
         ════════════════════════════════════════════════════════════════════ */}
         <section className="py-24 px-4 max-w-lg mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast} className="text-center mb-14">
@@ -1466,7 +1460,7 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §6  AMPLOP DIGITAL
+            §5  AMPLOP DIGITAL
         ════════════════════════════════════════════════════════════════════ */}
         <section className="py-24 px-4 max-w-lg mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast} className="text-center mb-14">
@@ -1557,7 +1551,7 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §7  UCAPAN & DOA
+            §6  UCAPAN & DOA
         ════════════════════════════════════════════════════════════════════ */}
         <section className="py-24 px-4 max-w-lg mx-auto">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast} className="text-center mb-14">
@@ -1618,7 +1612,7 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §8  CLOSING
+            §7  CLOSING
         ════════════════════════════════════════════════════════════════════ */}
         <section className="py-32 px-6 text-center" style={{ background: "var(--cream)" }}>
           <motion.div
@@ -1648,7 +1642,7 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §9  STICKY RSVP BAR
+            §8  STICKY RSVP BAR
         ════════════════════════════════════════════════════════════════════ */}
         <motion.div
           initial={{ y: 130 }}
