@@ -1279,7 +1279,7 @@ export default function WeddingInvitation({
                 Awal Pertemuan dan Menjalin Hubungan
               </h2>
               <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
-                Semua bermula dari pertemuan yang begitu kebetulan—momen yang tak pernah saya bayangkan sebelumnya. Saat itu, kami menjalani hubungan tanpa status. Namun, waktu, komunikasi, dan setiap pertemuan perlahan membuat kami semakin dekat. Kami terus bertukar kabar; tanpa disadari, perjalanan ini telah membawa kami sejauh ini. Berbagai rintangan pun kami lewati bersama, hingga akhirnya saya mantap memilihnya sebagai pasangan hidup, calon istri, dan teman hidup saya.
+                Kisah kami bermula dari sebuah pertemuan tak terduga—momen yang tak pernah kami bayangkan sebelumnya. Awalnya, kami menjalin kedekatan tanpa status. Namun, waktu, komunikasi, dan setiap pertemuan perlahan membuat kami semakin dekat. Hari demi hari, kami terus bertukar kabar dan melewati berbagai rintangan bersama. Seiring waktu, kami menyadari bahwa perjalanan ini telah membawa kami sejauh ini, hingga akhirnya kami mantap memilih satu sama lain sebagai pasangan hidup dan melangkah bersama menuju masa depan.
               </p>
             </div>
             <div className="grid grid-cols-[1.08fr_0.92fr] items-center md:items-end gap-3 md:gap-5">
@@ -1356,7 +1356,7 @@ export default function WeddingInvitation({
                   Lamaran
                 </h2>
                 <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
-                  Dari pertemuan tak terduga pada 2022, tumbuh keyakinan bahwa kami dapat menjadi tempat pulang bagi satu sama lain. Dengan restu orang tua dan cinta yang terus bertumbuh, kami memantapkan langkah menuju masa depan bersama melalui lamaran pada 07 September 2025.
+                  Pertemuan tak terduga pada 2022 menjadi awal dari kisah kami. Seiring waktu, tumbuh keyakinan bahwa kami dapat menjadi tempat pulang bagi satu sama lain. Dengan restu orang tua dan cinta yang terus bertumbuh, kami mengikat komitmen dan memantapkan langkah menuju masa depan bersama melalui lamaran pada 7 September 2025.
                 </p>
               </div>
             </motion.div>
