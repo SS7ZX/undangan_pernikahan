@@ -57,6 +57,11 @@ const C = {
   photo1:        "/photo1.jpeg",
   photo2:        "/photo2.jpeg",
   photo3:        "/photo3.jpeg",
+  countdownTarget: "2026-11-07T09:00:00+07:00",
+  parentGroom: "Bapak H. ... & Ibu ...",
+  parentBride: "Bapak ... & Ibu ...",
+  storyIntro: "Dari sebuah pertemuan yang tak disengaja, kami belajar bahwa cinta yang tumbuh dengan ikhlas akan membawa dua hati menuju satu tujuan: membangun rumah tangga yang penuh berkah.",
+  blessing: "Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam momen sakral dan bahagia kami.",
 } as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -213,6 +218,62 @@ const MapsLink = memo(({ href }: { href: string }) => {
   );
 });
 MapsLink.displayName = "MapsLink";
+
+const CountdownTimer = memo(({ targetDate }: { targetDate: string }) => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const update = () => {
+      const difference = new Date(targetDate).getTime() - Date.now();
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, [targetDate]);
+
+  const blocks = [
+    { label: "Hari", value: timeLeft.days },
+    { label: "Jam", value: timeLeft.hours },
+    { label: "Menit", value: timeLeft.minutes },
+    { label: "Detik", value: timeLeft.seconds },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-2xl mx-auto mt-8">
+      {blocks.map((item) => (
+        <div
+          key={item.label}
+          className="rounded-2xl border border-[#E7E3DA] bg-white/60 px-4 py-5 shadow-[0_14px_38px_rgba(40,42,35,0.05)] backdrop-blur-sm"
+        >
+          <p className="font-sans text-[9px] tracking-[0.35em] uppercase mb-2" style={{ color: "var(--muted)" }}>
+            {item.label}
+          </p>
+          <p className="font-serif text-3xl sm:text-4xl" style={{ color: "var(--ink)" }}>
+            {String(item.value).padStart(2, "0")}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+});
+CountdownTimer.displayName = "CountdownTimer";
 
 const SendButton = memo(() => {
   const [hov, setHov] = useState(false);
@@ -1267,7 +1328,27 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §2  GALLERY
+            §2  COUNTDOWN
+        ════════════════════════════════════════════════════════════════════ */}
+        <section className="py-20 px-4" style={{ background: "linear-gradient(180deg, rgba(242,245,232,0.5), rgba(250,248,243,0.95))" }}>
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast}>
+              <motion.div variants={vIn}><SectionBadge label="Countdown" /></motion.div>
+              <motion.h2 variants={vUp} className="font-serif font-light" style={{ fontSize: "clamp(2.3rem,8vw,3.7rem)", color: "var(--ink)" }}>
+                Hitung Mundur Hari Bahagia
+              </motion.h2>
+              <motion.p variants={vUp} className="font-sans text-sm mx-auto mt-4" style={{ color: "var(--muted)", maxWidth: "44ch" }}>
+                {C.blessing}
+              </motion.p>
+              <motion.div variants={vIn}>
+                <CountdownTimer targetDate={C.countdownTarget} />
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            §3  GALLERY
         ════════════════════════════════════════════════════════════════════ */}
         <section ref={galleryRef} className="py-16 px-4 overflow-hidden" style={{ background: "var(--cream)" }}>
           <div className="max-w-2xl mx-auto">
@@ -1279,7 +1360,10 @@ export default function WeddingInvitation({
                 Awal Pertemuan dan Menjalin Hubungan
               </h2>
               <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
-                Kisah kami bermula dari sebuah pertemuan tak terduga—momen yang tak pernah kami bayangkan sebelumnya. Awalnya, kami menjalin kedekatan tanpa status. Namun, waktu, komunikasi, dan setiap pertemuan perlahan membuat kami semakin dekat. Hari demi hari, kami terus bertukar kabar dan melewati berbagai rintangan bersama. Seiring waktu, kami menyadari bahwa perjalanan ini telah membawa kami sejauh ini, hingga akhirnya kami mantap memilih satu sama lain sebagai pasangan hidup dan melangkah bersama menuju masa depan.
+                {C.storyIntro}
+              </p>
+              <p className="font-sans text-sm mt-5 leading-relaxed" style={{ color: "var(--muted)" }}>
+                Dari hati yang mulai terbuka, dari waktu yang tak terburu-buru, hingga akhirnya kami saling memilih untuk menapaki langkah baru dalam ikatan suci. Tuhan menggerakkan hati kami untuk bertemu, belajar, dan tumbuh bersama.
               </p>
             </div>
             <div className="grid grid-cols-[1.08fr_0.92fr] items-center md:items-end gap-3 md:gap-5">
@@ -1364,7 +1448,36 @@ export default function WeddingInvitation({
         </section>
 
         {/* ════════════════════════════════════════════════════════════════════
-            §3  DARK SAVE-THE-DATE
+            §4  FAMILY / BLESSINGS
+        ════════════════════════════════════════════════════════════════════ */}
+        <section className="py-20 px-4 max-w-5xl mx-auto">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={vFast} className="text-center mb-12">
+            <motion.div variants={vIn}><SectionBadge label="Keluarga" /></motion.div>
+            <motion.h2 variants={vUp} className="font-serif font-light" style={{ fontSize: "clamp(2.1rem,7vw,3.2rem)", color: "var(--ink)" }}>
+              Dengan Restu Keluarga
+            </motion.h2>
+          </motion.div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <div className="p-8 text-center">
+                <p className="font-sans text-[9px] tracking-[0.42em] uppercase mb-4" style={{ color: "var(--light)" }}>Mempelai Pria</p>
+                <p className="font-serif text-2xl md:text-3xl mb-3" style={{ color: "var(--ink)" }}>{C.groomFull}</p>
+                <p className="font-sans text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{C.parentGroom}</p>
+              </div>
+            </Card>
+            <Card>
+              <div className="p-8 text-center">
+                <p className="font-sans text-[9px] tracking-[0.42em] uppercase mb-4" style={{ color: "var(--light)" }}>Mempelai Wanita</p>
+                <p className="font-serif text-2xl md:text-3xl mb-3" style={{ color: "var(--ink)" }}>{C.brideFull}</p>
+                <p className="font-sans text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{C.parentBride}</p>
+              </div>
+            </Card>
+          </div>
+        </section>
+
+        {/* ════════════════════════════════════════════════════════════════════
+            §5  DARK SAVE-THE-DATE
         ═══════════════════════════════════════════════════════════════ */}
         <section
           className="relative mx-4 md:mx-6 my-16 rounded-[2.5rem] overflow-hidden"
@@ -1451,6 +1564,20 @@ export default function WeddingInvitation({
                     <p className="font-sans text-[9px] tracking-[0.4em] uppercase mb-1.5" style={{ color: "var(--light)" }}>Lokasi</p>
                     <p className="font-serif text-xl md:text-2xl font-light">{C.venue}</p>
                     <p className="font-sans text-sm mt-1 leading-relaxed" style={{ color: "var(--muted)" }}>{C.address}</p>
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-3 text-center">
+                  <div className="rounded-2xl border border-[#EAE6E0] bg-[#F8F5F0] px-4 py-3">
+                    <p className="font-sans text-[8px] tracking-[0.35em] uppercase" style={{ color: "var(--light)" }}>Akad</p>
+                    <p className="font-serif text-lg mt-2">09.00 WIB</p>
+                  </div>
+                  <div className="rounded-2xl border border-[#EAE6E0] bg-[#F8F5F0] px-4 py-3">
+                    <p className="font-sans text-[8px] tracking-[0.35em] uppercase" style={{ color: "var(--light)" }}>Sambutan</p>
+                    <p className="font-serif text-lg mt-2">10.00 WIB</p>
+                  </div>
+                  <div className="rounded-2xl border border-[#EAE6E0] bg-[#F8F5F0] px-4 py-3">
+                    <p className="font-sans text-[8px] tracking-[0.35em] uppercase" style={{ color: "var(--light)" }}>Resepsi</p>
+                    <p className="font-serif text-lg mt-2">Selesai</p>
                   </div>
                 </div>
                 <MapsLink href={C.mapsUrl} />
