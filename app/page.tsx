@@ -35,7 +35,7 @@ import Image from "next/image";
 const C = {
   groom:         "Rian",
   bride:         "Windi",
-  groomFull:     "Rian Pebriansyah",
+  groomFull:     "Rian Pebriansyah, S.Psi.",
   brideFull:     "Windi Nuraeni",
   date:          "Sabtu, 07 November 2026",
   dateFormal:    "07 · 11 · 2026",
