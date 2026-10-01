@@ -16,6 +16,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Rian & Windi | Undangan Pernikahan",
   description: "Undangan pernikahan Rian & Windi.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
