@@ -304,7 +304,7 @@ const RSVPLink = memo(({ href, variant, children, onClick }: {
       onClick={onClick}
       className={[
         "flex items-center justify-center gap-2 rounded-2xl py-4 font-sans text-[10px] tracking-[0.28em] uppercase transition-all duration-300",
-        isPrimary ? "attend-pulse flex-1" : "flex-shrink-0 border px-5",
+        isPrimary ? "attend-pulse flex-1" : "shrink-0 border px-5",
       ].join(" ")}
       style={isPrimary ? {
         background: hov ? "var(--sage)" : "var(--ink)",
@@ -729,7 +729,7 @@ export default function WeddingInvitation({
           {phase === "splash" && (
             <motion.div
               key="splash"
-              className="fixed inset-0 z-[9995] flex flex-col items-center justify-center overflow-hidden select-none"
+              className="fixed inset-0 z-9995lex flex-col items-center justify-center overflow-hidden select-none"
               style={{ background: "var(--parch)", cursor: "pointer" }}
               exit={{ opacity: 0, scale: 1.04, transition: { duration: 0.55, ease: [0.4,0,0.2,1] } }}
               onClick={handleSplashTap}
@@ -770,7 +770,7 @@ export default function WeddingInvitation({
               {/* Top + bottom bands */}
               {["top-0","bottom-0"].map(pos => (
                 <div key={pos} className={`absolute ${pos} inset-x-0 pointer-events-none`}>
-                  <div className="h-[3px]" style={{ background: "linear-gradient(90deg,transparent,var(--gold-mid) 25%,var(--gold-deep) 50%,var(--gold-mid) 75%,transparent)" }} />
+                  <div className="h-0.75" style={{ background: "linear-gradient(90deg,transparent,var(--gold-mid) 25%,var(--gold-deep) 50%,var(--gold-mid) 75%,transparent)" }} />
                 </div>
               ))}
 
@@ -859,7 +859,7 @@ export default function WeddingInvitation({
           {phase === "loading" && (
             <motion.div
               key="loader"
-              className="fixed inset-0 z-[9990] flex flex-col items-center justify-center overflow-hidden"
+              className="fixed inset-0 z-9990 flex flex-col items-center justify-center overflow-hidden"
               style={{ background: "var(--parch)" }}
               exit={{ clipPath: "inset(100% 0 0 0)", transition: { duration: 1.2, ease: [0.76,0,0.24,1], delay: 0.05 } }}
             >
@@ -879,8 +879,8 @@ export default function WeddingInvitation({
                 transition={{ duration: 1.2, delay: 0.1 }}
                 className="absolute top-0 inset-x-0 pointer-events-none"
               >
-                <div className="h-[3px]" style={{ background: "linear-gradient(90deg, transparent, var(--gold-mid) 25%, var(--gold-deep) 50%, var(--gold-mid) 75%, transparent)" }} />
-                <div className="h-[1px] mt-1" style={{ background: "linear-gradient(90deg, transparent, var(--parch-dk) 30%, var(--parch-dk) 70%, transparent)", opacity: 0.5 }} />
+                <div className="h-0.75" style={{ background: "linear-gradient(90deg, transparent, var(--gold-mid) 25%, var(--gold-deep) 50%, var(--gold-mid) 75%, transparent)" }} />
+                <div className="h-px mt-1" style={{ background: "linear-gradient(90deg, transparent, var(--parch-dk) 30%, var(--parch-dk) 70%, transparent)", opacity: 0.5 }} />
               </motion.div>
 
               {/* Bottom ornamental band */}
@@ -890,8 +890,8 @@ export default function WeddingInvitation({
                 transition={{ duration: 1.2, delay: 0.1 }}
                 className="absolute bottom-0 inset-x-0 pointer-events-none"
               >
-                <div className="h-[1px] mb-1" style={{ background: "linear-gradient(90deg, transparent, var(--parch-dk) 30%, var(--parch-dk) 70%, transparent)", opacity: 0.5 }} />
-                <div className="h-[3px]" style={{ background: "linear-gradient(90deg, transparent, var(--gold-mid) 25%, var(--gold-deep) 50%, var(--gold-mid) 75%, transparent)" }} />
+                <div className="h-1px mb-1" style={{ background: "linear-gradient(90deg, transparent, var(--parch-dk) 30%, var(--parch-dk) 70%, transparent)", opacity: 0.5 }} />
+                <div className="h-0.75" style={{ background: "linear-gradient(90deg, transparent, var(--gold-mid) 25%, var(--gold-deep) 50%, var(--gold-mid) 75%, transparent)" }} />
               </motion.div>
 
               {/* Corner ornaments */}
@@ -1095,7 +1095,7 @@ export default function WeddingInvitation({
               </motion.p>
 
               {/* ── Progress bar ── */}
-              <div className="w-56 h-[2px] relative rounded-full overflow-hidden" style={{ background: "rgba(139,105,20,0.15)" }}>
+              <div className="w-56 h-0.75 relative rounded-full overflow-hidden" style={{ background: "rgba(139,105,20,0.15)" }}>
                 <div
                   className="absolute inset-y-0 left-0 rounded-full"
                   style={{
@@ -1119,7 +1119,7 @@ export default function WeddingInvitation({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: phase === "splash" ? 0 : 1, y: phase === "splash" ? -12 : 0 }}
           transition={{ delay: 3.2, duration: 0.7, ease }}
-          className="fixed top-4 left-4 z-[600]"
+          className="fixed top-4 left-4 z-600"
           aria-label="Navigasi utama"
         >
           <div
@@ -1158,7 +1158,7 @@ export default function WeddingInvitation({
           onClick={toggleAudio}
           {...hover}
           aria-label={isPlaying ? "Pause" : "Play musik"}
-          className="fixed top-4 right-4 z-[600] flex items-center gap-2.5 rounded-full px-4 py-2.5 border"
+          className="fixed top-4 right-4 z-600 flex items-center gap-2.5 rounded-full px-4 py-2.5 border"
           style={{
             background: "rgba(250,248,243,0.82)",
             backdropFilter: "blur(24px)",
@@ -1264,7 +1264,7 @@ export default function WeddingInvitation({
 
               {/* Ampersand row */}
               <motion.div variants={vIn} className="flex items-center gap-4 my-3 w-full justify-center">
-                <div className="h-px flex-1 max-w-[120px]" style={{ background: "linear-gradient(to right,transparent,var(--sage-l))" }} />
+                <div className="h-px flex-1 max-w-30" style={{ background: "linear-gradient(to right,transparent,var(--sage-l))" }} />
                 <motion.span
                   animate={{ scale: [1, 1.1, 1], rotate: [0, 3, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
@@ -1273,7 +1273,7 @@ export default function WeddingInvitation({
                 >
                   &
                 </motion.span>
-                <div className="h-px flex-1 max-w-[120px]" style={{ background: "linear-gradient(to left,transparent,var(--sage-l))" }} />
+                <div className="h-px flex-1 max-w-30" style={{ background: "linear-gradient(to left,transparent,var(--sage-l))" }} />
               </motion.div>
 
               {/* BRIDE — massive */}
