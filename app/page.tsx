@@ -35,7 +35,7 @@ import Image from "next/image";
 const C = {
   groom:         "Rian",
   bride:         "Windi",
-  groomFull:     "Rian Pebriansyah, S.Psi",
+  groomFull:     "Rian Pebriansyah",
   brideFull:     "Windi Nuraeni",
   date:          "Sabtu, 07 November 2026",
   dateFormal:    "07 · 11 · 2026",
@@ -58,8 +58,8 @@ const C = {
   photo2:        "/photo2.jpeg",
   photo3:        "/photo3.jpeg",
   countdownTarget: "2026-11-07T09:00:00+07:00",
-  parentGroom: "Bapak H. ... & Ibu ...",
-  parentBride: "Bapak ... & Ibu ...",
+  parentGroom: "Bapak Edi Rusmana & Ibu Icih Mintarsih",
+  parentBride: "Alm. Bapak Ahmad Nurcholis, S.Pd. & Ibu Warsih",
   storyIntro: "Dari sebuah pertemuan yang tak disengaja, kami belajar bahwa cinta yang tumbuh dengan ikhlas akan membawa dua hati menuju satu tujuan: membangun rumah tangga yang penuh berkah.",
   blessing: "Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam momen sakral dan bahagia kami.",
 } as const;
