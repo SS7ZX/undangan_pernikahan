@@ -1531,7 +1531,7 @@ export default function WeddingInvitation({
           <div className="flex flex-col gap-4">
             <Card>
               <div className="p-8 flex items-center gap-5">
-                <div className="w-13 h-13 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
+                <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                   <Calendar size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
                 </div>
                 <div>
@@ -1543,7 +1543,7 @@ export default function WeddingInvitation({
 
             <Card>
               <div className="p-8 flex items-center gap-5">
-                <div className="w-13 h-13 rounded-2xl flex-shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
+                <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                   <Clock size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
                 </div>
                 <div>
@@ -1557,7 +1557,7 @@ export default function WeddingInvitation({
             <Card>
               <div className="p-8 flex flex-col gap-5">
                 <div className="flex items-start gap-5">
-                  <div className="w-13 h-13 rounded-2xl flex-shrink-0 flex items-center justify-center mt-1" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
+                  <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center mt-1" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                     <MapPin size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
                   </div>
                   <div>
@@ -1775,7 +1775,7 @@ export default function WeddingInvitation({
           initial={{ y: 130 }}
           animate={{ y: 0 }}
           transition={{ delay: 3.5, type: "spring", stiffness: 48, damping: 15 }}
-          className="fixed bottom-0 inset-x-0 z-[9000]"
+          className="fixed bottom-0 inset-x-0 z-9000"
         >
           <div
             className="w-full border-t"
