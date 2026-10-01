@@ -479,7 +479,7 @@ export default function WeddingInvitation({
     const txt =
       `✨ *Doa & Ucapan untuk ${C.groom} & ${C.bride}* ✨\n\n` +
       `*Dari:* ${name}\n\n*Pesan:*\n_${msg}_\n\n` +
-      `— Dikirim via Undangan Digital · ${C.dateFormal}`;
+      `Dikirim via Undangan Digital · ${C.dateFormal}`;
     window.open(`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(txt)}`, "_blank");
     setSubmitted(true);
     setName(""); setMsg("");
@@ -1548,8 +1548,8 @@ export default function WeddingInvitation({
                 </div>
                 <div>
                   <p className="font-sans text-[9px] tracking-[0.4em] uppercase mb-1.5" style={{ color: "var(--light)" }}>Waktu</p>
-                  <p className="font-serif text-xl md:text-2xl font-light">Akad — {C.timeAkad}</p>
-                  <p className="font-serif text-xl md:text-2xl font-light">Resepsi — {C.timeResepsi}</p>
+                  <p className="font-serif text-xl md:text-2xl font-light">Akad: {C.timeAkad}</p>
+                  <p className="font-serif text-xl md:text-2xl font-light">Resepsi: {C.timeResepsi}</p>
                 </div>
               </div>
             </Card>
@@ -1608,7 +1608,7 @@ export default function WeddingInvitation({
                 {/* Bride */}
                 <div className="w-full text-center py-6 px-5 rounded-2xl" style={{ background: "var(--sage-p)" }}>
                   <p className="font-sans text-[8px] tracking-[0.44em] uppercase mb-2" style={{ color: "var(--sage)" }}>
-                    {C.bankName} — Mempelai Wanita
+                    {C.bankName}: Mempelai Wanita
                   </p>
                   <p className="font-serif text-2xl tracking-[0.08em] font-light" style={{ color: "var(--ink)" }}>
                     {C.bankAccount}
@@ -1642,7 +1642,7 @@ export default function WeddingInvitation({
                 {/* Groom */}
                 <div className="w-full text-center py-6 px-5 rounded-2xl" style={{ background: "var(--sage-p)" }}>
                   <p className="font-sans text-[8px] tracking-[0.44em] uppercase mb-2" style={{ color: "var(--sage)" }}>
-                    {C.bankName2} — Mempelai Pria
+                    {C.bankName2}: Mempelai Pria
                   </p>
                   <p className="font-serif text-2xl tracking-[0.08em] font-light" style={{ color: "var(--ink)" }}>
                     {C.bankAccount2}
