@@ -1,5 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="R and W monogram">
-  <rect width="64" height="64" rx="16" fill="#5B1E1E"/>
-  <rect x="6" y="6" width="52" height="52" rx="12" stroke="#E8D7A6" stroke-width="1.5" fill="none"/>
-  <text x="50%" y="55%" text-anchor="middle" fill="#F7F1E4" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700" letter-spacing="0.5">R&amp;W</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="R and W monogram">
+  <defs>
+    <linearGradient id="bg" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#5D1F20"/>
+      <stop offset="100%" stop-color="#2D1215"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="54" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="98" fill="none" stroke="#EAD7A6" stroke-width="7"/>
+
+  <text x="82" y="154" text-anchor="middle" fill="#F8F3EA" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700">R</text>
+  <text x="128" y="156" text-anchor="middle" fill="#EAD7A6" font-family="Georgia, 'Times New Roman', serif" font-size="54" font-weight="700">&amp;</text>
+  <text x="174" y="154" text-anchor="middle" fill="#F8F3EA" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700">W</text>
 </svg>
