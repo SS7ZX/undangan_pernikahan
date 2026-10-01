@@ -708,7 +708,7 @@ export default function WeddingInvitation({
         {/* ── CUSTOM CURSOR ─────────────────────────────────────────────────── */}
         {!isMobile && (
           <motion.div
-            className="fixed top-0 left-0 z-[9999] pointer-events-none"
+            className="fixed top-0 left-0 z-9999 pointer-events-none"
             style={{ x: cx, y: cy }}
           >
             <motion.div
