@@ -2,8 +2,8 @@
 
 /**
  * ╔═══════════════════════════════════════════════════════════════════════════╗
- * ║  UNDANGAN DIGITAL — page.tsx                                             ║
- * ║  Botanical Luxury · ULTRA PREMIUM · Mobile-First                         ║
+ * ║  UNDANGAN DIGITAL — page.tsx                                              ║
+ * ║  Botanical Luxury · ULTRA PREMIUM · Mobile-First                          ║
  * ╚═══════════════════════════════════════════════════════════════════════════╝
  *
  * KEY UPGRADES:
