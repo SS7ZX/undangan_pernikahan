@@ -303,8 +303,8 @@ const RSVPLink = memo(({ href, variant, children, onClick }: {
       href={href} target="_blank" rel="noreferrer"
       onClick={onClick}
       className={[
-        "flex items-center justify-center gap-2 rounded-2xl py-4 font-sans text-[10px] tracking-[0.28em] uppercase transition-all duration-300",
-        isPrimary ? "attend-pulse flex-1" : "shrink-0 border px-5",
+        "flex min-w-0 items-center justify-center gap-2 rounded-2xl py-4 text-center font-sans text-[9px] leading-tight tracking-widest uppercase transition-all duration-300 sm:text-[10px] sm:tracking-[0.28em]",
+        isPrimary ? "attend-pulse flex-1" : "border px-3 sm:px-5",
       ].join(" ")}
       style={isPrimary ? {
         background: hov ? "var(--sage)" : "var(--ink)",
@@ -355,6 +355,7 @@ export default function WeddingInvitation({
   const [attendance, setAttendance] = useState<"yes" | "no" | "maybe" | null>(initialAttendance);
 
   const audioRef   = useRef<HTMLAudioElement | null>(null);
+  const hasOpenedRef = useRef(false);
   const heroRef    = useRef<HTMLElement>(null);
   const galleryRef = useRef<HTMLElement>(null);
 
@@ -421,7 +422,8 @@ export default function WeddingInvitation({
   // Audio starts HERE — guaranteed to work on every browser including iOS Safari.
   const handleSplashTap = useCallback(() => {
     const a = audioRef.current;
-    if (!a) return;
+    if (!a || hasOpenedRef.current) return;
+    hasOpenedRef.current = true;
 
     // Fade volume up smoothly from 0 → 0.32 over 1.5s
     a.volume = 0;
@@ -729,11 +731,19 @@ export default function WeddingInvitation({
           {phase === "splash" && (
             <motion.div
               key="splash"
-              className="fixed inset-0 z-9995lex flex-col items-center justify-center overflow-hidden select-none"
+              className="fixed inset-0 z-9995 flex flex-col items-center justify-center overflow-hidden px-5 pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] select-none"
               style={{ background: "var(--parch)", cursor: "pointer" }}
               exit={{ opacity: 0, scale: 1.04, transition: { duration: 0.55, ease: [0.4,0,0.2,1] } }}
               onClick={handleSplashTap}
-              onTouchEnd={e => { e.preventDefault(); handleSplashTap(); }}
+              role="button"
+              tabIndex={0}
+              aria-label="Buka undangan"
+              onKeyDown={e => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleSplashTap();
+                }
+              }}
             >
               {/* Warm radial bg */}
               <div className="absolute inset-0 pointer-events-none" style={{
@@ -1119,7 +1129,8 @@ export default function WeddingInvitation({
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: phase === "splash" ? 0 : 1, y: phase === "splash" ? -12 : 0 }}
           transition={{ delay: 3.2, duration: 0.7, ease }}
-          className="fixed top-4 left-4 z-600"
+          className="fixed left-4 z-600"
+          style={{ top: "calc(env(safe-area-inset-top, 0px) + 12px)" }}
           aria-label="Navigasi utama"
         >
           <div
@@ -1158,8 +1169,9 @@ export default function WeddingInvitation({
           onClick={toggleAudio}
           {...hover}
           aria-label={isPlaying ? "Pause" : "Play musik"}
-          className="fixed top-4 right-4 z-600 flex items-center gap-2.5 rounded-full px-4 py-2.5 border"
+          className="fixed right-4 z-600 flex items-center gap-2.5 rounded-full border px-4 py-2.5"
           style={{
+            top: "calc(env(safe-area-inset-top, 0px) + 12px)",
             background: "rgba(250,248,243,0.82)",
             backdropFilter: "blur(24px)",
             WebkitBackdropFilter: "blur(24px)",
@@ -1191,7 +1203,7 @@ export default function WeddingInvitation({
         <section
           ref={heroRef}
           className="relative flex flex-col items-center justify-center text-center px-6 overflow-hidden"
-          style={{ height: "100svh", minHeight: 680 }}
+          style={{ minHeight: "min(100svh, 680px)" }}
         >
           {/* Botanical bg */}
           <div className="absolute inset-0 pointer-events-none" style={{
@@ -1223,8 +1235,7 @@ export default function WeddingInvitation({
             initial={{ opacity: 0, y: -20 }}
             animate={phase === "ready" ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.7, duration: 0.9 }}
-            className="absolute flex justify-center w-full px-6"
-            style={{ top: "calc(env(safe-area-inset-top, 0px) + 20px)" }}
+            className="mb-8 flex w-full justify-center px-6"
           >
             <span className="font-sans text-[9px] tracking-[0.5em] uppercase px-5 py-2 rounded-full" style={{
               border: "1px solid #C9D4A8",
@@ -1304,7 +1315,7 @@ export default function WeddingInvitation({
                 <span className="font-sans text-[8px] tracking-[0.42em] uppercase" style={{ color: "#9A9A90" }}>
                   Undangan khusus untuk
                 </span>
-                <span className="font-serif text-2xl md:text-3xl" style={{ color: "var(--ink)" }}>
+                <span className="max-w-full wrap-break-word font-serif text-2xl md:text-3xl" style={{ color: "var(--ink)", overflowWrap: "anywhere" }}>
                   {guestName}
                 </span>
               </motion.div>
@@ -1460,14 +1471,14 @@ export default function WeddingInvitation({
 
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
-              <div className="p-8 text-center">
+              <div className="p-6 sm:p-8 text-center">
                 <p className="font-sans text-[9px] tracking-[0.42em] uppercase mb-4" style={{ color: "var(--light)" }}>Mempelai Pria</p>
                 <p className="font-serif text-2xl md:text-3xl mb-3" style={{ color: "var(--ink)" }}>{C.groomFull}</p>
                 <p className="font-sans text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{C.parentGroom}</p>
               </div>
             </Card>
             <Card>
-              <div className="p-8 text-center">
+              <div className="p-6 sm:p-8 text-center">
                 <p className="font-sans text-[9px] tracking-[0.42em] uppercase mb-4" style={{ color: "var(--light)" }}>Mempelai Wanita</p>
                 <p className="font-serif text-2xl md:text-3xl mb-3" style={{ color: "var(--ink)" }}>{C.brideFull}</p>
                 <p className="font-sans text-sm leading-relaxed" style={{ color: "var(--muted)" }}>{C.parentBride}</p>
@@ -1530,7 +1541,7 @@ export default function WeddingInvitation({
 
           <div className="flex flex-col gap-4">
             <Card>
-              <div className="p-8 flex items-center gap-5">
+              <div className="flex items-center gap-5 p-5 sm:p-8">
                 <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                   <Calendar size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
                 </div>
@@ -1542,7 +1553,7 @@ export default function WeddingInvitation({
             </Card>
 
             <Card>
-              <div className="p-8 flex items-center gap-5">
+              <div className="flex items-center gap-5 p-5 sm:p-8">
                 <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                   <Clock size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
                 </div>
@@ -1555,7 +1566,7 @@ export default function WeddingInvitation({
             </Card>
 
             <Card>
-              <div className="p-8 flex flex-col gap-5">
+              <div className="flex flex-col gap-5 p-5 sm:p-8">
                 <div className="flex items-start gap-5">
                   <div className="w-13 h-13 rounded-2xl shrink-0 flex items-center justify-center mt-1" style={{ background: "var(--sage-p)", width: 52, height: 52 }}>
                     <MapPin size={22} strokeWidth={1.3} style={{ color: "var(--sage)" }} />
@@ -1598,7 +1609,7 @@ export default function WeddingInvitation({
           </motion.div>
 
           <Card>
-            <div className="p-9 md:p-12 flex flex-col items-center gap-0">
+            <div className="flex flex-col items-center gap-0 p-6 sm:p-9 md:p-12">
               <p className="font-sans text-sm text-center leading-relaxed mb-10" style={{ color: "var(--muted)", maxWidth: "32ch", margin: "0 auto 2.5rem" }}>
                 Kehadiran Anda adalah hadiah yang paling berarti. Namun jika Anda ingin memberikan restu, Anda dapat melakukannya di sini.
               </p>
@@ -1689,7 +1700,7 @@ export default function WeddingInvitation({
           </motion.div>
 
           <Card>
-            <div className="p-9 md:p-12">
+            <div className="p-6 sm:p-9 md:p-12">
               <p className="font-sans text-sm text-center leading-relaxed mb-10" style={{ color: "var(--muted)" }}>
                 Kata-kata Anda adalah bunga yang mekar paling lama. Tuliskan ucapan Anda dan kami akan menerimanya dengan sepenuh hati.
               </p>
