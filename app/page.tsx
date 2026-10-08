@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * ╔════════════════════════════════════════════════════════════════════╗
- * ║  UNDANGAN DIGITAL — page.tsx                                       ║
- * ║  Botanical Luxury · ULTRA PREMIUM · Mobile-First                   ║
- * ╚════════════════════════════════════════════════════════════════════╝
+ * ╔═════════════════════════════════════════════════════════════════╗
+ * ║  UNDANGAN DIGITAL — page.tsx                                    ║
+ * ║  Botanical Luxury · ULTRA PREMIUM · Mobile-First                ║
+ * ╚═════════════════════════════════════════════════════════════════╝
  *
  * KEY UPGRADES:
  *  • Loading screen: Cream/parchment palette — warm & bold mandala
