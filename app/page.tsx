@@ -60,7 +60,6 @@ const C = {
   countdownTarget: "2026-11-07T09:00:00+07:00",
   parentGroom: "Bapak Edi Rusmana & Ibu Icih Mintarsih",
   parentBride: "Alm. Bapak Ahmad Nurcholis, S.Pd. & Ibu Warsih",
-  storyIntro: "Dari sebuah pertemuan yang tak disengaja, kami belajar bahwa cinta yang tumbuh dengan ikhlas akan membawa dua hati menuju satu tujuan: membangun rumah tangga yang penuh berkah.",
   blessing: "Dengan penuh syukur, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dalam momen sakral dan bahagia kami.",
 } as const;
 
@@ -1368,18 +1367,19 @@ export default function WeddingInvitation({
                 Kisah Kami · 01
               </p>
               <h2 className="font-serif font-light text-[clamp(1.75rem,6vw,2.5rem)] mb-4" style={{ color: "var(--ink)" }}>
-                Awal Pertemuan dan Menjalin Hubungan
+                Awal pertemuan dan menjalin hubungan
               </h2>
-              <p className="font-serif font-light text-base sm:text-lg leading-[1.85]" style={{ color: "#5A5850" }}>
-                {C.storyIntro}
-              </p>
-              <p className="font-sans text-sm mt-5 leading-relaxed" style={{ color: "var(--muted)" }}>
-                Awal pertemuan dan menjalin hubungan 
-
-Berawal dari kejadian yang sangat kebetulan dan pertemuan yang sangat tidak pernah saya bayangkan 
-
-Kami menjalani hubungan tanpa status apapun, dan seiring berjalannya waktu ternyata kami sudah sejauh ini bersama dan bertukar kabar.  Komunikasi dan pertemuan seolah menjadi jembatan untuk kami sampai pada saat ini Entah berapa banyak rintangan yang kami hadapi hingga pada akhirnya saya memutuskan untuk menjadikannya sebagai pasangan saya, istri saya dan teman hidup saya.
-              </p>
+              <div className="space-y-4 font-sans text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+                <p>
+                  Berawal dari kejadian yang sangat kebetulan dan pertemuan yang sangat tidak pernah saya bayangkan.
+                </p>
+                <p>
+                  Kami menjalani hubungan tanpa status apapun, dan seiring berjalannya waktu ternyata kami sudah sejauh ini bersama dan bertukar kabar. Komunikasi dan pertemuan seolah menjadi jembatan untuk kami sampai pada saat ini.
+                </p>
+                <p>
+                  Entah berapa banyak rintangan yang kami hadapi hingga pada akhirnya saya memutuskan untuk menjadikannya sebagai pasangan saya, istri saya dan teman hidup saya.
+                </p>
+              </div>
             </div>
             <div className="grid grid-cols-[1.08fr_0.92fr] items-center md:items-end gap-3 md:gap-5">
               <motion.div style={{ y: p1Y }} className="-mt-3 min-w-0 md:mt-0">
