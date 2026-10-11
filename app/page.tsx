@@ -1374,7 +1374,11 @@ export default function WeddingInvitation({
                 {C.storyIntro}
               </p>
               <p className="font-sans text-sm mt-5 leading-relaxed" style={{ color: "var(--muted)" }}>
-                Dari hati yang mulai terbuka, dari waktu yang tak terburu-buru, hingga akhirnya kami saling memilih untuk menapaki langkah baru dalam ikatan suci. Tuhan menggerakkan hati kami untuk bertemu, belajar, dan tumbuh bersama.
+                Awal pertemuan dan menjalin hubungan 
+
+Berawal dari kejadian yang sangat kebetulan dan pertemuan yang sangat tidak pernah saya bayangkan 
+
+Kami menjalani hubungan tanpa status apapun, dan seiring berjalannya waktu ternyata kami sudah sejauh ini bersama dan bertukar kabar.  Komunikasi dan pertemuan seolah menjadi jembatan untuk kami sampai pada saat ini Entah berapa banyak rintangan yang kami hadapi hingga pada akhirnya saya memutuskan untuk menjadikannya sebagai pasangan saya, istri saya dan teman hidup saya.
               </p>
             </div>
             <div className="grid grid-cols-[1.08fr_0.92fr] items-center md:items-end gap-3 md:gap-5">
