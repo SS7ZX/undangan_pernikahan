@@ -1357,7 +1357,7 @@ export default function WeddingInvitation({
           </div>
         </section>
 
-        {/* ════════════════════════════════════════════════════════════════════
+        {/* ═══════════════════════════════════════════════════════════════
             §3  GALLERY
         ════════════════════════════════════════════════════════════════════ */}
         <section ref={galleryRef} className="py-16 px-4 overflow-hidden" style={{ background: "var(--cream)" }}>
