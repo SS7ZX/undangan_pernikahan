@@ -53,7 +53,7 @@ npm install
 4. Untuk hosting seperti Vercel, tambahkan keempat environment variable yang sama di pengaturan project, lalu deploy ulang.
 5. Buka `/admin` dan login dengan `ADMIN_PASSWORD`. Dashboard memperbarui data setiap 30 detik; gunakan tombol **Muat ulang** untuk memperbarui langsung.
 
-Bagikan tautan personal `/guest/[slug]` dari admin agar RSVP dan ucapan tercatat serta terhubung dengan tamu. Halaman utama `/` tetap mengirim pesan ke WhatsApp, tetapi tidak memiliki slug untuk mengaitkan data ke tamu.
+Bagikan tautan personal `/guest/[slug]` dari admin agar RSVP tercatat atas nama tamu. Ucapan dari link personal terkait ke tamu; ucapan dari halaman utama `/` juga disimpan dan muncul di dashboard sebagai **Undangan Umum**.
 
 Jalankan server lokal dengan:
 

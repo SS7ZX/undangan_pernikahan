@@ -12,7 +12,7 @@ import {
   Copy, Check, MessageCircle, Download, Search,
   Users, BarChart3, MessageSquare, ArrowUpRight, Plus, X, LogOut, RefreshCw,
 } from "lucide-react";
-import type { Guest, GuestStats } from "@/lib/types";
+import type { AdminWish, Guest, GuestStats } from "@/lib/types";
 import {
   fetchAllGuests,
   calculateGuestStats,
@@ -40,13 +40,15 @@ export default function AdminDashboard() {
   const [authError, setAuthError] = useState("");
   const [dashboardError, setDashboardError] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [unassignedWishes, setUnassignedWishes] = useState<AdminWish[]>([]);
 
   const loadGuests = useCallback(async () => {
     setRefreshing(true);
     try {
-      const data = await fetchAllGuests();
-      setGuests(data);
-      setStats(calculateGuestStats(data));
+      const result = await fetchAllGuests();
+      setGuests(result.guests);
+      setUnassignedWishes(result.unassignedWishes);
+      setStats(calculateGuestStats(result.guests));
       setDashboardError("");
     } catch (error) {
       setDashboardError(
@@ -112,6 +114,7 @@ export default function AdminDashboard() {
       setAuthenticated(false);
       setGuests([]);
       setStats(null);
+      setUnassignedWishes([]);
     } catch (error) {
       setDashboardError(
         error instanceof Error ? error.message : "Gagal keluar dari dashboard admin."
@@ -251,14 +254,17 @@ export default function AdminDashboard() {
     );
   }
 
-  const wishes = guests
+  const wishes: AdminWish[] = [
+    ...unassignedWishes,
+    ...guests
     .flatMap((guest) =>
       (guest.wishes ?? []).map((wish) => ({
         ...wish,
         guestName: guest.name,
         attendance: guest.attendance,
       }))
-    )
+    ),
+  ]
     .sort(
       (left, right) =>
         new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()

@@ -286,24 +286,26 @@ const SendButton = memo(({ disabled = false }: { disabled?: boolean }) => {
       onMouseLeave={() => setHov(false)}
     >
       <Send size={13} strokeWidth={1.6} />
-      Kirim via WhatsApp
+      Kirim Ucapan
     </button>
   );
 });
 SendButton.displayName = "SendButton";
 
-const RSVPLink = memo(({ href, variant, children, onClick }: {
-  href: string; variant: "primary" | "secondary"; children: React.ReactNode;
+const RSVPLink = memo(({ variant, children, onClick, disabled = false }: {
+  variant: "primary" | "secondary"; children: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }) => {
   const [hov, setHov] = useState(false);
   const isPrimary = variant === "primary";
   return (
-    <a
-      href={href} target="_blank" rel="noreferrer"
+    <button
+      type="button"
+      disabled={disabled}
       onClick={onClick}
       className={[
-        "flex min-w-0 items-center justify-center gap-2 rounded-2xl py-4 text-center font-sans text-[9px] leading-tight tracking-widest uppercase transition-all duration-300 sm:text-[10px] sm:tracking-[0.28em]",
+        "flex min-w-0 items-center justify-center gap-2 rounded-2xl py-4 text-center font-sans text-[9px] leading-tight tracking-widest uppercase transition-all duration-300 disabled:cursor-wait disabled:opacity-60 sm:text-[10px] sm:tracking-[0.28em]",
         isPrimary ? "attend-pulse flex-1" : "border px-3 sm:px-5",
       ].join(" ")}
       style={isPrimary ? {
@@ -318,7 +320,7 @@ const RSVPLink = memo(({ href, variant, children, onClick }: {
       onMouseLeave={() => setHov(false)}
     >
       {children}
-    </a>
+    </button>
   );
 });
 RSVPLink.displayName = "RSVPLink";
@@ -493,24 +495,19 @@ export default function WeddingInvitation({
       return;
     }
 
-    const txt =
-      `✨ *Doa & Ucapan untuk ${C.groom} & ${C.bride}* ✨\n\n` +
-      `*Dari:* ${senderName}\n\n*Pesan:*\n_${message}_\n\n` +
-      `Dikirim via Undangan Digital · ${C.dateFormal}`;
-    window.open(`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(txt)}`, "_blank");
-
     setWishError("");
     setIsSubmittingWish(true);
     try {
-      if (guestSlug) {
-        const response = await fetch(`/api/guests/${encodeURIComponent(guestSlug)}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ senderName, message }),
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Ucapan gagal disimpan");
-      }
+      const endpoint = guestSlug
+        ? `/api/guests/${encodeURIComponent(guestSlug)}`
+        : "/api/wishes";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ senderName, message }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Ucapan gagal disimpan");
 
       setSubmitted(true);
       setName("");
@@ -526,7 +523,7 @@ export default function WeddingInvitation({
   const saveAttendance = useCallback((nextAttendance: "yes" | "no") => {
     setAttendanceError("");
     if (!guestSlug) {
-      setAttendance(nextAttendance);
+      setAttendanceError("Konfirmasi kehadiran hanya bisa disimpan lewat link undangan personal.");
       return;
     }
 
@@ -1799,9 +1796,7 @@ export default function WeddingInvitation({
                       </p>
                     )}
                     <p className="font-sans text-[9px] text-center" style={{ color: "#C0BEB4" }}>
-                      {guestSlug
-                        ? "Ucapan tersimpan di dashboard admin dan WhatsApp mempelai akan terbuka."
-                        : "Pesan akan langsung dikirim ke WhatsApp mempelai."}
+                      Ucapan akan tersimpan di halaman web dan terlihat di dashboard admin.
                     </p>
                   </motion.form>
                 )}
@@ -1878,22 +1873,18 @@ export default function WeddingInvitation({
               style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
             >
               <RSVPLink
-                href={`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(
-                  `✨ *Konfirmasi Kehadiran*\n\nAssalamualaikum,\n\nSaya, *${guestName}*, menyatakan *hadir* di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\n📅 ${C.date}\n🕌 ${C.venue}\n\nSalam hangat,`
-                )}`}
                 variant="primary"
                 onClick={() => saveAttendance("yes")}
+                disabled={isSavingAttendance}
               >
                 <Heart size={12} fill="currentColor" strokeWidth={0} />
-                Konfirmasi Hadir
+                {isSavingAttendance ? "Menyimpan..." : "Konfirmasi Hadir"}
               </RSVPLink>
 
               <RSVPLink
-                href={`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(
-                  `Assalamualaikum,\n\nSaya, *${guestName}*, mohon maaf tidak dapat hadir di pernikahan *${C.groomFull}* & *${C.brideFull}*.\n\nSemoga acara berjalan lancar dan penuh berkah. 🤲`
-                )}`}
                 variant="secondary"
                 onClick={() => saveAttendance("no")}
+                disabled={isSavingAttendance}
               >
                 Tidak Hadir
               </RSVPLink>

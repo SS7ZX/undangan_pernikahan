@@ -6,7 +6,7 @@ type SupabaseGuest = Omit<Guest, "invitationType" | "wishes"> & {
 
 type SupabaseWish = {
   id: number;
-  guest_id: number;
+  guest_id: number | null;
   sender_name: string;
   message: string;
   created_at: string;
@@ -54,28 +54,40 @@ function toGuest(row: SupabaseGuest): Guest {
   return { ...guest, invitationType: invitation_type };
 }
 
-export async function listGuestsWithWishes(): Promise<Guest[]> {
+export async function listGuestsWithWishes(): Promise<{
+  guests: Guest[];
+  unassignedWishes: GuestWish[];
+}> {
   const [guestRows, wishRows] = await Promise.all([
     supabaseRequest<SupabaseGuest[]>("guests?select=*&order=name.asc"),
     supabaseRequest<SupabaseWish[]>("guest_wishes?select=*&order=created_at.desc"),
   ]);
   const wishesByGuest = new Map<number, GuestWish[]>();
+  const unassignedWishes: GuestWish[] = [];
 
   for (const wish of wishRows) {
-    const wishes = wishesByGuest.get(wish.guest_id) ?? [];
-    wishes.push({
+    const formattedWish = {
       id: wish.id,
       senderName: wish.sender_name,
       message: wish.message,
       createdAt: wish.created_at,
-    });
+    };
+    if (wish.guest_id === null) {
+      unassignedWishes.push(formattedWish);
+      continue;
+    }
+    const wishes = wishesByGuest.get(wish.guest_id) ?? [];
+    wishes.push(formattedWish);
     wishesByGuest.set(wish.guest_id, wishes);
   }
 
-  return guestRows.map((row) => ({
-    ...toGuest(row),
-    wishes: wishesByGuest.get(row.id) ?? [],
-  }));
+  return {
+    guests: guestRows.map((row) => ({
+      ...toGuest(row),
+      wishes: wishesByGuest.get(row.id) ?? [],
+    })),
+    unassignedWishes,
+  };
 }
 
 export async function findGuestBySlug(
@@ -120,6 +132,25 @@ export async function createGuestWish(
       sender_name: senderName,
       message,
     }),
+  });
+  const wish = rows[0];
+
+  return {
+    id: wish.id,
+    senderName: wish.sender_name,
+    message: wish.message,
+    createdAt: wish.created_at,
+  };
+}
+
+export async function createUnassignedWish(
+  senderName: string,
+  message: string
+): Promise<GuestWish> {
+  const rows = await supabaseRequest<SupabaseWish[]>("guest_wishes?select=*", {
+    method: "POST",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ guest_id: null, sender_name: senderName, message }),
   });
   const wish = rows[0];
 

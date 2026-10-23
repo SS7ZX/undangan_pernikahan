@@ -10,10 +10,11 @@ export async function GET(request: Request) {
   if (!isAdminAuthenticated(request)) return unauthorized();
 
   try {
-    const guests = await listGuestsWithWishes();
+    const { guests, unassignedWishes } = await listGuestsWithWishes();
     return Response.json({
       success: true,
       data: guests,
+      unassignedWishes,
       stats: calculateGuestStats(guests),
       count: guests.length,
     });

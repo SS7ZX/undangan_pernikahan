@@ -2,16 +2,26 @@
 // GUEST DATA UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════
 
-import type { Guest, GuestStats } from "./types";
+import type { AdminWish, Guest, GuestStats } from "./types";
 
 /**
  * Fetch all guests from JSON file
  */
-export async function fetchAllGuests(): Promise<Guest[]> {
+export async function fetchAllGuests(): Promise<{
+  guests: Guest[];
+  unassignedWishes: AdminWish[];
+}> {
   const response = await fetch("/api/guests", { cache: "no-store" });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || "Failed to fetch guests");
-  return result.data;
+  return {
+    guests: result.data,
+    unassignedWishes: (result.unassignedWishes ?? []).map((wish: AdminWish) => ({
+      ...wish,
+      guestName: "Undangan Umum",
+      attendance: null,
+    })),
+  };
 }
 
 /**

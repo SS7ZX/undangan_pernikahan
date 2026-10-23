@@ -36,6 +36,11 @@ export interface GuestWish {
   createdAt: string;
 }
 
+export interface AdminWish extends GuestWish {
+  guestName: string;
+  attendance: AttendanceStatus;
+}
+
 export interface GuestWithLink extends Guest {
   link: string;
   qrCode?: string;

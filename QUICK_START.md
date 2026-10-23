@@ -38,10 +38,10 @@
 - Add a guest from **Tambah Tamu** in the dashboard; a unique personal slug is generated.
 - Use **Copy** or **WhatsApp** to share their `/guest/[slug]` link.
 - RSVP status is saved as guests confirm attendance or decline.
-- Wishes submitted from a personal guest link are saved with the sender's name and appear in the dashboard. Dashboard data refreshes every 30 seconds; **Muat ulang** refreshes immediately.
+- Wishes submitted on any invitation page are saved on the website and appear in the dashboard. Personal invitation links associate wishes with the invited guest; wishes from `/` appear as **Undangan Umum**. Dashboard data refreshes every 30 seconds; **Muat ulang** refreshes immediately.
 - Use **Export CSV** to download guest names, invitation links, RSVP statuses, and wishes.
 
-The main invitation page (`/`) can still send wishes through WhatsApp, but only personal `/guest/[slug]` links are associated with a guest record.
+RSVP status is saved for guests using their personal `/guest/[slug]` invitation link. If RSVP is clicked on `/` without a personal guest link, the page explains that a personal link is needed. Wishes can be saved from both pages.
 
 ## Supabase environment variables for hosting
 
