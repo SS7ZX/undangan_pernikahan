@@ -8,25 +8,23 @@ import type { Guest, GuestStats } from "./types";
  * Fetch all guests from JSON file
  */
 export async function fetchAllGuests(): Promise<Guest[]> {
-  try {
-    const response = await fetch("/api/guests", {
-      cache: "no-store",
-    });
-    if (!response.ok) throw new Error("Failed to fetch guests");
-    const result = await response.json();
-    return result.data || [];
-  } catch (error) {
-    console.error("Error fetching guests:", error);
-    return [];
-  }
+  const response = await fetch("/api/guests", { cache: "no-store" });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || "Failed to fetch guests");
+  return result.data;
 }
 
 /**
  * Fetch single guest by slug
  */
 export async function fetchGuestBySlug(slug: string): Promise<Guest | null> {
-  const guests = await fetchAllGuests();
-  return guests.find((g) => g.slug === slug) || null;
+  const response = await fetch(`/api/guests/${encodeURIComponent(slug)}`, {
+    cache: "no-store",
+  });
+  const result = await response.json();
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(result.error || "Failed to fetch guest");
+  return result.data;
 }
 
 /**

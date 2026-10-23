@@ -5,9 +5,11 @@ Sistem digital untuk mengelola tamu pernikahan dengan link undangan personal unt
 ## ✨ Fitur Utama
 
 ### 1. **Admin Dashboard** (`/admin`)
-- 📊 Statistik real-time (total tamu, RSVP, dll)
+- 🔐 Login admin untuk melindungi data tamu
+- 📊 Statistik RSVP dan pembaruan otomatis
 - 🔍 Search & filter tamu berdasarkan kategori
 - 📋 Tabel lengkap dengan aksi cepat
+- 💌 Daftar ucapan beserta status kehadiran
 - 📥 Export ke CSV
 - 🔗 Copy link undangan
 - 💬 Kirim via WhatsApp
@@ -20,9 +22,10 @@ Sistem digital untuk mengelola tamu pernikahan dengan link undangan personal unt
 - 💌 Call-to-action untuk RSVP
 
 ### 3. **Data Management**
-- 📁 Imported workbook storage (`_generated-guests.json`) via `/api/guests`
+- ☁️ Supabase untuk menyimpan data tamu, RSVP, dan ucapan secara online
 - 🏷️ Unique slug per tamu
 - 📊 Tracking status RSVP
+- 💌 Ucapan disimpan per undangan personal
 - 🏷️ Tipe undangan (fisik/digital) dan kategori tamu
 
 ## 🚀 Cara Memulai
@@ -30,10 +33,35 @@ Sistem digital untuk mengelola tamu pernikahan dengan link undangan personal unt
 ### Setup
 ```bash
 npm install
+```
+
+### Supabase dan login admin
+
+1. Buat project Supabase, lalu jalankan isi `supabase/schema.sql` di **SQL Editor**.
+2. Buat file `.env.local` di root project:
+
+   ```env
+   SUPABASE_URL=https://PROJECT-REF.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ADMIN_PASSWORD=choose-a-unique-password-at-least-12-characters
+   ADMIN_SESSION_SECRET=generate-a-random-secret-at-least-32-characters
+   ```
+
+   Buat secret acak dengan `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`.
+   Jangan gunakan prefix `NEXT_PUBLIC_` atau membagikan `SUPABASE_SERVICE_ROLE_KEY`; key ini hanya boleh tersedia di server.
+3. Impor daftar awal dari `_generated-guests.json` dengan `npm run import:guests`. Import aman dijalankan ulang dan tidak menimpa tamu yang sudah ada.
+4. Untuk hosting seperti Vercel, tambahkan keempat environment variable yang sama di pengaturan project, lalu deploy ulang.
+5. Buka `/admin` dan login dengan `ADMIN_PASSWORD`. Dashboard memperbarui data setiap 30 detik; gunakan tombol **Muat ulang** untuk memperbarui langsung.
+
+Bagikan tautan personal `/guest/[slug]` dari admin agar RSVP dan ucapan tercatat serta terhubung dengan tamu. Halaman utama `/` tetap mengirim pesan ke WhatsApp, tetapi tidak memiliki slug untuk mengaitkan data ke tamu.
+
+Jalankan server lokal dengan:
+
+```bash
 npm run dev
 ```
 
-Buka browser ke `http://localhost:3000`
+Buka `http://localhost:3000`.
 
 ### Struktur File
 
@@ -53,19 +81,18 @@ app/
 lib/
 ├── types.ts              # TypeScript types
 ├── guests.ts             # Guest utilities & API
+├── supabase-server.ts    # Supabase server-side data access
 └── guest-utils.ts        # Template & helper functions
 
-_generated-guests.json    # Database hasil import workbook
-public/
-└── guests.json           # Data fallback/template lama
-
+supabase/schema.sql       # Schema database
+_generated-guests.json   # Sumber daftar tamu untuk impor awal
 ```
 
 ## 📝 Menggunakan Sistem
 
 ### 1. Kelola Daftar Tamu
 
-Edit `_generated-guests.json` untuk menambah/mengubah tamu:
+Daftar awal diimpor dari `_generated-guests.json`. Setelah impor, tambah tamu lewat dashboard agar perubahan tersimpan di Supabase:
 
 ```json
 [
@@ -111,6 +138,8 @@ Lihat statistik di dashboard:
 - Menunggu konfirmasi
 - Breakdown per kategori
 
+Dashboard menampilkan setiap ucapan beserta nama pengirim, undangan yang dituju, waktu kirim, dan status RSVP (hadir/tidak hadir/menunggu).
+
 ### 5. Export Data
 
 Klik **Export CSV** untuk download daftar tamu.
@@ -118,7 +147,7 @@ Klik **Export CSV** untuk download daftar tamu.
 ## 🎨 Kustomisasi
 
 ### Edit Data Tamu
-Edit `_generated-guests.json` langsung di text editor atau IDE. Nomor telepon boleh dikosongkan; tombol WhatsApp akan membuka pemilih kontak.
+Daftar tamu yang digunakan aplikasi disimpan di Supabase. Tambahkan tamu dari dashboard; `_generated-guests.json` digunakan sebagai sumber impor awal. Nomor telepon boleh dikosongkan; tombol WhatsApp akan membuka pemilih kontak.
 
 ### Edit Teks Undangan
 Edit `app/guest/[slug]/page.tsx` untuk mengubah teks dan data pernikahan:
@@ -153,14 +182,13 @@ vercel
 Atau langsung di https://vercel.com/new
 
 ### 3. Environment Variables
-Tidak perlu environment variables untuk setup dasar.
+`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`, dan `ADMIN_SESSION_SECRET` wajib tersedia di environment server lokal maupun hosting.
 
 ## 🔐 Keamanan
 
-⚠️ **Important**: Sistem ini menggunakan static JSON untuk Vercel.
-- Data tamu tidak terenkripsi
-- Untuk production dengan data sensitif, gunakan database + authentication
-- Pertimbangkan menggunakan Firebase atau Supabase untuk keamanan lebih baik
+⚠️ `SUPABASE_SERVICE_ROLE_KEY` memberi akses penuh ke database. Simpan hanya di environment server, jangan pernah mengirimkannya ke browser atau meng-commit-nya.
+
+Dashboard dan API daftar tamu memerlukan login admin. Tautan personal dapat digunakan untuk menyimpan RSVP dan ucapan, jadi bagikan tautan tersebut hanya kepada penerima undangan.
 
 ## 📊 Struktur Data Guest
 
@@ -188,16 +216,19 @@ interface Guest {
 - [ ] Gift registry
 - [ ] Photo gallery
 - [x] RSVP personal tersimpan berdasarkan slug tamu
+- [x] Ucapan tersimpan dan terlihat di dashboard admin
 
 ## 🐛 Troubleshooting
 
 ### Link tidak berfungsi
-- Pastikan `slug` di JSON sudah benar (lowercase, no spaces)
+- Pastikan tamu sudah diimpor ke Supabase dan slug tautan sesuai dengan data tamu
 - Refresh page dan clear cache
 
 ### Admin dashboard kosong
-- Pastikan `public/guests.json` sudah ada dan valid JSON
-- Check browser console untuk error
+- Pastikan schema di `supabase/schema.sql` sudah dijalankan.
+- Pastikan environment variables Supabase dan admin sudah diatur.
+- Jika daftar tamu belum diimpor, jalankan `npm run import:guests`.
+- Check browser console dan terminal untuk error.
 
 ### WhatsApp link tidak kebuka
 - Pastikan nomor telepon format: `62895369942679`

@@ -26,6 +26,14 @@ export interface Guest {
   attendance: AttendanceStatus;
   notes: string;
   invitationType?: InvitationType;
+  wishes?: GuestWish[];
+}
+
+export interface GuestWish {
+  id: number;
+  senderName: string;
+  message: string;
+  createdAt: string;
 }
 
 export interface GuestWithLink extends Guest {

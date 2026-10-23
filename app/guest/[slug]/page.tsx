@@ -18,6 +18,7 @@ export default function GuestInvitationPage() {
   const slug = params?.slug;
   const [guest, setGuest] = useState<Guest | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -27,6 +28,11 @@ export default function GuestInvitationPage() {
     fetchGuestBySlug(slug).then((data) => {
       if (!active) return;
       setGuest(data);
+      setLoading(false);
+    }).catch((error: unknown) => {
+      if (!active) return;
+      console.error("Failed to load invitation:", error);
+      setLoadError("Data undangan gagal dimuat. Silakan coba muat ulang halaman.");
       setLoading(false);
     });
 
@@ -54,6 +60,7 @@ export default function GuestInvitationPage() {
           <p className="font-sans text-sm text-[#78786E]">
             Link undangan ini tidak valid atau tamunya belum terdaftar.
           </p>
+          {loadError && <p role="alert" className="mt-3 font-sans text-sm text-red-700">{loadError}</p>}
         </div>
       </div>
     );

@@ -158,9 +158,9 @@ const Card = memo(({ children, className = "", dark = false }: {
 ));
 Card.displayName = "Card";
 
-const Field = memo(({ id, label, value, onChange, placeholder, rows }: {
+const Field = memo(({ id, label, value, onChange, placeholder, rows, maxLength }: {
   id: string; label: string; value: string;
-  onChange: (v: string) => void; placeholder: string; rows?: number;
+  onChange: (v: string) => void; placeholder: string; rows?: number; maxLength?: number;
 }) => {
   const [focused, setFocused] = useState(false);
   const shared: React.CSSProperties = {
@@ -177,13 +177,13 @@ const Field = memo(({ id, label, value, onChange, placeholder, rows }: {
         {label}
       </label>
       {rows ? (
-        <textarea id={id} rows={rows} required value={value}
+        <textarea id={id} rows={rows} required value={value} maxLength={maxLength}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder} style={shared}
           onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         />
       ) : (
-        <input id={id} type="text" required value={value}
+        <input id={id} type="text" required value={value} maxLength={maxLength}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder} style={shared}
           onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
@@ -274,12 +274,13 @@ const CountdownTimer = memo(({ targetDate }: { targetDate: string }) => {
 });
 CountdownTimer.displayName = "CountdownTimer";
 
-const SendButton = memo(() => {
+const SendButton = memo(({ disabled = false }: { disabled?: boolean }) => {
   const [hov, setHov] = useState(false);
   return (
     <button
       type="submit"
-      className="mt-1 w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 font-sans text-[10px] tracking-[0.34em] uppercase transition-all duration-300"
+      disabled={disabled}
+      className="mt-1 w-full flex items-center justify-center gap-2.5 rounded-2xl py-4 font-sans text-[10px] tracking-[0.34em] uppercase transition-all duration-300 disabled:cursor-wait disabled:opacity-60"
       style={{ background: hov ? "var(--sage)" : "var(--ink)", color: "var(--cream)" }}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
@@ -348,6 +349,10 @@ export default function WeddingInvitation({
   const [name,      setName]      = useState("");
   const [msg,       setMsg]       = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [wishError, setWishError] = useState("");
+  const [isSubmittingWish, setIsSubmittingWish] = useState(false);
+  const [attendanceError, setAttendanceError] = useState("");
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false);
   const [isMobile,  setIsMobile]  = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [guestName, setGuestName] = useState(() => personalizedGuestName.trim() || "Tamu Undangan");
@@ -475,28 +480,73 @@ export default function WeddingInvitation({
     setTimeout(() => setCopied(""), 2500);
   }, []);
 
-  const handleWish = useCallback((e: React.FormEvent) => {
+  const handleWish = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    const senderName = name.trim();
+    const message = msg.trim();
+    if (!senderName || !message) {
+      setWishError("Nama dan ucapan wajib diisi.");
+      return;
+    }
+    if (senderName.length > 120 || message.length > 2000) {
+      setWishError("Nama maksimal 120 karakter dan ucapan maksimal 2.000 karakter.");
+      return;
+    }
+
     const txt =
       `✨ *Doa & Ucapan untuk ${C.groom} & ${C.bride}* ✨\n\n` +
-      `*Dari:* ${name}\n\n*Pesan:*\n_${msg}_\n\n` +
+      `*Dari:* ${senderName}\n\n*Pesan:*\n_${message}_\n\n` +
       `Dikirim via Undangan Digital · ${C.dateFormal}`;
     window.open(`https://wa.me/${C.whatsapp}?text=${encodeURIComponent(txt)}`, "_blank");
-    setSubmitted(true);
-    setName(""); setMsg("");
-    setTimeout(() => setSubmitted(false), 4500);
-  }, [name, msg]);
+
+    setWishError("");
+    setIsSubmittingWish(true);
+    try {
+      if (guestSlug) {
+        const response = await fetch(`/api/guests/${encodeURIComponent(guestSlug)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ senderName, message }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Ucapan gagal disimpan");
+      }
+
+      setSubmitted(true);
+      setName("");
+      setMsg("");
+      setTimeout(() => setSubmitted(false), 4500);
+    } catch (error) {
+      setWishError(error instanceof Error ? error.message : "Ucapan gagal disimpan.");
+    } finally {
+      setIsSubmittingWish(false);
+    }
+  }, [guestSlug, name, msg]);
 
   const saveAttendance = useCallback((nextAttendance: "yes" | "no") => {
-    setAttendance(nextAttendance);
-    if (!guestSlug) return;
+    setAttendanceError("");
+    if (!guestSlug) {
+      setAttendance(nextAttendance);
+      return;
+    }
+
+    setIsSavingAttendance(true);
     void fetch(`/api/guests/${encodeURIComponent(guestSlug)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ attendance: nextAttendance }),
-    }).catch(() => {
-      // WhatsApp remains available even when a static JSON deployment cannot write.
-    });
+    })
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "RSVP gagal disimpan");
+        setAttendance(nextAttendance);
+      })
+      .catch((error: unknown) => {
+        setAttendanceError(
+          error instanceof Error ? error.message : "RSVP gagal disimpan. Silakan coba lagi."
+        );
+      })
+      .finally(() => setIsSavingAttendance(false));
   }, [guestSlug]);
 
   const hover = { onMouseEnter: () => setHoverBtn(true), onMouseLeave: () => setHoverBtn(false) };
@@ -1740,11 +1790,18 @@ export default function WeddingInvitation({
                     onSubmit={handleWish}
                     className="flex flex-col gap-8"
                   >
-                    <Field id="f-name" label="Nama Anda" value={name} onChange={setName} placeholder="mis. Budi & Keluarga" />
-                    <Field id="f-msg"  label="Ucapan & Doa" value={msg}  onChange={setMsg}  placeholder="Semoga selalu bahagia dan penuh berkah…" rows={4} />
-                    <SendButton />
+                    <Field id="f-name" label="Nama Anda" value={name} onChange={setName} placeholder="mis. Budi & Keluarga" maxLength={120} />
+                    <Field id="f-msg"  label="Ucapan & Doa" value={msg}  onChange={setMsg}  placeholder="Semoga selalu bahagia dan penuh berkah…" rows={4} maxLength={2000} />
+                    <SendButton disabled={isSubmittingWish} />
+                    {wishError && (
+                      <p role="alert" className="-mt-5 text-center font-sans text-xs text-red-600">
+                        {wishError}
+                      </p>
+                    )}
                     <p className="font-sans text-[9px] text-center" style={{ color: "#C0BEB4" }}>
-                      Pesan akan langsung dikirim ke WhatsApp mempelai.
+                      {guestSlug
+                        ? "Ucapan tersimpan di dashboard admin dan WhatsApp mempelai akan terbuka."
+                        : "Pesan akan langsung dikirim ke WhatsApp mempelai."}
                     </p>
                   </motion.form>
                 )}
@@ -1804,7 +1861,16 @@ export default function WeddingInvitation({
           >
             {guestSlug && attendance && (
               <p className="pb-2 text-center font-sans text-[9px] tracking-[0.18em] uppercase" style={{ color: "var(--sage)" }}>
-                {attendance === "yes" ? "Kehadiran Anda sudah tercatat" : "Ketidakhadiran Anda sudah tercatat"}
+                {isSavingAttendance
+                  ? "Menyimpan konfirmasi kehadiran..."
+                  : attendance === "yes"
+                    ? "Kehadiran Anda sudah tercatat"
+                    : "Ketidakhadiran Anda sudah tercatat"}
+              </p>
+            )}
+            {attendanceError && (
+              <p role="alert" className="pb-2 text-center font-sans text-[10px] text-red-600">
+                {attendanceError}
               </p>
             )}
             <div
